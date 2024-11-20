@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget App</title>
+  <!-- Link to CSS -->
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Budget App</h1>
+    <!-- Instructions Button -->
+    <button id="instructions-btn">Instructions</button>
+  </header>
+
+  <!-- Instructions Modal -->
+  <div id="instructions-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-modal">&times;</span>
+      <h2>How to Use the Budget App</h2>
+      <ol>
+        <li>Set your budget projection by selecting a start date and projection length.</li>
+        <li>Enter your current account balance.</li>
+        <li>Add your recurring bills and expenses.</li>
+        <li>Add your income sources with frequency and start dates.</li>
+        <li>Review your running budget, expenses breakdown, and lowest projected balances.</li>
+        <li>Use the edit and delete options to manage your entries.</li>
+        <li>Export or import your data as needed.</li>
+      </ol>
+      <button id="close-modal-btn">Continue</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="container">
+      <div class="row">
+        <!-- Left Column -->
+        <div class="col" id="input-forms">
+          <!-- Start Date and Projection Length Form -->
+          <h2>Set Budget Projection</h2>
+          <form id="start-date-form">
+            <label for="start-date-input">Start Date:</label>
+            <input type="date" id="start-date-input" required />
+
+            <label for="projection-length">Projection Length (Months):</label>
+            <input type="number" id="projection-length" min="1" max="12" value="1" required />
+
+            <button type="submit">Set Budget Projection</button>
+          </form>
+
+          <!-- Account Balance Form -->
+          <h2>Account Balance</h2>
+          <form id="balance-form">
+            <label for="account-name">Account Name:</label>
+            <input type="text" id="account-name" required />
+
+            <label for="account-balance">Current Balance (USD):</label>
+            <input type="number" id="account-balance" step="0.01" required />
+
+            <button type="submit">Update Balance</button>
+          </form>
+
+          <!-- Bills Form -->
+          <h2>Add Bill/Expense</h2>
+          <form id="bill-form">
+            <label for="bill-name">Bill Name:</label>
+            <input type="text" id="bill-name" required />
+
+            <label for="bill-date">Day of Month (1-31):</label>
+            <input type="number" id="bill-date" min="1" max="31" required />
+
+            <label for="bill-amount">Amount (USD):</label>
+            <input type="number" id="bill-amount" step="0.01" required />
+
+            <label for="bill-category">Category:</label>
+            <select id="bill-category">
+              <option value="Expense">Expense</option>
+              <option value="Income">Income</option>
+            </select>
+
+            <!-- Hidden input to track edit mode -->
+            <input type="hidden" id="bill-index" value="" />
+
+            <button type="submit">Add Bill</button>
+          </form>
+
+          <!-- Bills List -->
+          <h2>Bills and Expenses</h2>
+          <table id="bills-list-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Day</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be added dynamically -->
+            </tbody>
+          </table>
+
+          <!-- Income Form -->
+          <h2>Add Income</h2>
+          <form id="income-form">
+            <label for="income-name">Income Name:</label>
+            <input type="text" id="income-name" required />
+
+            <label for="income-amount">Amount per Paycheck:</label>
+            <input type="number" id="income-amount" step="0.01" required />
+
+            <label for="income-frequency">Frequency:</label>
+            <select id="income-frequency">
+              <option value="Weekly">Weekly</option>
+              <option value="Bi-weekly">Bi-weekly</option>
+              <option value="Monthly">Monthly</option>
+            </select>
+
+            <label for="income-start-date">Start Date:</label>
+            <input type="date" id="income-start-date" required />
+
+            <!-- Hidden input to track edit mode -->
+            <input type="hidden" id="income-index" value="" />
+
+            <button type="submit">Add Income</button>
+          </form>
+
+          <!-- Income Entries List -->
+          <h2>Income Entries</h2>
+          <table id="income-list-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Frequency</th>
+                <th>Start Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be added dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col" id="display-area">
+          <!-- Account Balance Display -->
+          <!-- This will be inserted dynamically -->
+
+          <!-- Lowest Projected Balances Table -->
+          <h2>Lowest Balances by Month</h2>
+          <table id="lowest-balances-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Date</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be added dynamically -->
+            </tbody>
+          </table>
+
+          <!-- Running Budget Table -->
+          <h2>Running Budget</h2>
+          <table id="running-budget-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Event/Bill</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be added dynamically -->
+            </tbody>
+          </table>
+
+          <!-- Expenses Bar Chart -->
+          <h2>Expenses Breakdown (Total Over Projection Period)</h2>
+          <canvas id="expenses-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <button id="export-btn">Export Data</button>
+      <input type="file" id="import-file" accept=".json" />
+      <button id="reset-btn">Reset Data</button>
+    </footer>
+  </main>
+
+  <!-- Link to JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
