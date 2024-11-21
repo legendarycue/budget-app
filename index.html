@@ -64,7 +64,7 @@
             <li>Enter the name of the expense.</li>
             <li>Select the specific date it will occur.</li>
             <li>Enter the amount in USD.</li>
-            <li>Select a category from the dropdown menu.</li>
+            <li>Select a category from the dropdown menu or add a new category.</li>
             <li>Click "Add Adhoc Expense" to save it.</li>
           </ul>
         </li>
@@ -202,26 +202,12 @@
             <input type="number" id="adhoc-expense-amount" step="0.01" required />
 
             <label for="adhoc-expense-category">Category:</label>
-            <select id="adhoc-expense-category">
-              <option value="Charity/Donations">Charity/Donations</option>
-              <option value="Childcare">Childcare</option>
-              <option value="Debt Payments">Debt Payments</option>
-              <option value="Dining Out/Takeout">Dining Out/Takeout</option>
-              <option value="Education">Education</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Hobbies/Recreation">Hobbies/Recreation</option>
-              <option value="Housing">Housing</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Personal Care">Personal Care</option>
-              <option value="Pets">Pets</option>
-              <option value="Savings/Investments">Savings/Investments</option>
-              <option value="Subscriptions/Memberships">Subscriptions/Memberships</option>
-              <option value="Transportation">Transportation</option>
-              <option value="Travel">Travel</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Misc/Other">Misc/Other</option>
-            </select>
+            <div class="category-container">
+              <select id="adhoc-expense-category">
+                <!-- Categories will be populated dynamically -->
+              </select>
+              <button type="button" id="add-adhoc-category-btn">Add Category</button>
+            </div>
 
             <!-- Hidden input to track edit mode -->
             <input type="hidden" id="adhoc-expense-index" value="" />
@@ -292,7 +278,7 @@
         <!-- Right Column -->
         <div class="col" id="display-area">
           <!-- Account Balance Display -->
-          <!-- This will be inserted dynamically -->
+          <h3 id="balance-display">Current Balance: $0.00</h3>
 
           <!-- Expenses Bar Chart -->
           <h2>Expenses Breakdown (Total Over Projection Period)</h2>
