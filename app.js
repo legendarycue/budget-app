@@ -112,18 +112,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
         dateCell.textContent = item.date.toLocaleDateString('en-US', options);
   
-        // Prepare income indicator
-        let incomeIndicator = '';
+        // Set row background color if income exists
         if (item.dailyIncome > 0) {
-          incomeIndicator = '<span style="color:#77dd77; font-size:1.5em;">$ </span>';
-          // Set row background color to light pastel green
           row.style.backgroundColor = '#e6ffe6'; // Light pastel green
         }
   
         if (item.event) {
-          eventCell.innerHTML = incomeIndicator + item.event;
+          eventCell.textContent = item.event;
         } else {
-          eventCell.innerHTML = incomeIndicator + '---';
+          eventCell.textContent = '---';
         }
   
         // Debit/Credit Cell

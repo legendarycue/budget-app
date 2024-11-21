@@ -25,6 +25,7 @@ body {
   
   .row {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
   }
   
@@ -32,6 +33,7 @@ body {
     flex: 1;
     min-width: 300px;
     padding: 1em;
+    box-sizing: border-box;
   }
   
   form {
@@ -143,5 +145,12 @@ body {
     background-color: #f9f9f9; /* Very light grey */
     padding: 1em;
     margin-bottom: 2em;
+  }
+  
+  /* Responsive Layout */
+  @media (max-width: 800px) {
+    .row {
+      flex-direction: column;
+    }
   }
   
