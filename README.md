@@ -22,7 +22,7 @@ BudgetApp is a user-friendly web application designed to help individuals manage
 * *   **Responsive Design**: The app is mobile-friendly and adjusts to different screen sizes for optimal usability.
 
 ## Installation Instructions
-
+ 
 1. 1.  **Clone the Repository**:
 1.     
 1.     bash
