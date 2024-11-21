@@ -65,7 +65,8 @@ body {
   }
   
   #export-btn,
-  #reset-btn {
+  #reset-btn,
+  #import-btn {
     margin-right: 1em;
   }
   
@@ -135,5 +136,12 @@ body {
   
   #close-modal-btn {
     margin-top: 1em;
+  }
+  
+  .card {
+    border: 1px solid lightgrey;
+    background-color: #f9f9f9; /* Very light grey */
+    padding: 1em;
+    margin-bottom: 2em;
   }
   

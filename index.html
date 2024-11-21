@@ -26,6 +26,7 @@
         <li>Enter your current account balance.</li>
         <li>Add your recurring bills and expenses.</li>
         <li>Add your income sources with frequency and start dates.</li>
+        <li>Add adhoc expenses for specific dates as needed.</li>
         <li>Review your running budget, expenses breakdown, and lowest projected balances.</li>
         <li>Use the edit and delete options to manage your entries.</li>
         <li>Export or import your data as needed.</li>
@@ -41,7 +42,7 @@
         <div class="col" id="input-forms">
           <!-- Start Date and Projection Length Form -->
           <h2>Set Budget Projection</h2>
-          <form id="start-date-form">
+          <form id="start-date-form" class="card">
             <label for="start-date-input">Start Date:</label>
             <input type="date" id="start-date-input" required />
 
@@ -53,7 +54,7 @@
 
           <!-- Account Balance Form -->
           <h2>Account Balance</h2>
-          <form id="balance-form">
+          <form id="balance-form" class="card">
             <label for="account-name">Account Name:</label>
             <input type="text" id="account-name" required />
 
@@ -65,7 +66,7 @@
 
           <!-- Bills Form -->
           <h2>Add Bill/Expense</h2>
-          <form id="bill-form">
+          <form id="bill-form" class="card">
             <label for="bill-name">Bill Name:</label>
             <input type="text" id="bill-name" required />
 
@@ -77,8 +78,24 @@
 
             <label for="bill-category">Category:</label>
             <select id="bill-category">
-              <option value="Expense">Expense</option>
-              <option value="Income">Income</option>
+              <option value="Charity/Donations">Charity/Donations</option>
+              <option value="Childcare">Childcare</option>
+              <option value="Debt Payments">Debt Payments</option>
+              <option value="Dining Out/Takeout">Dining Out/Takeout</option>
+              <option value="Education">Education</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Hobbies/Recreation">Hobbies/Recreation</option>
+              <option value="Housing">Housing</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Personal Care">Personal Care</option>
+              <option value="Pets">Pets</option>
+              <option value="Savings/Investments">Savings/Investments</option>
+              <option value="Subscriptions/Memberships">Subscriptions/Memberships</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Travel">Travel</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Misc/Other">Misc/Other</option>
             </select>
 
             <!-- Hidden input to track edit mode -->
@@ -104,9 +121,66 @@
             </tbody>
           </table>
 
+          <!-- Adhoc Expenses Form -->
+          <h2>Add Adhoc Expense</h2>
+          <form id="adhoc-expense-form" class="card">
+            <label for="adhoc-expense-name">Expense Name:</label>
+            <input type="text" id="adhoc-expense-name" required />
+
+            <label for="adhoc-expense-date">Date:</label>
+            <input type="date" id="adhoc-expense-date" required />
+
+            <label for="adhoc-expense-amount">Amount (USD):</label>
+            <input type="number" id="adhoc-expense-amount" step="0.01" required />
+
+            <label for="adhoc-expense-category">Category:</label>
+            <select id="adhoc-expense-category">
+              <option value="Charity/Donations">Charity/Donations</option>
+              <option value="Childcare">Childcare</option>
+              <option value="Debt Payments">Debt Payments</option>
+              <option value="Dining Out/Takeout">Dining Out/Takeout</option>
+              <option value="Education">Education</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Hobbies/Recreation">Hobbies/Recreation</option>
+              <option value="Housing">Housing</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Personal Care">Personal Care</option>
+              <option value="Pets">Pets</option>
+              <option value="Savings/Investments">Savings/Investments</option>
+              <option value="Subscriptions/Memberships">Subscriptions/Memberships</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Travel">Travel</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Misc/Other">Misc/Other</option>
+            </select>
+
+            <!-- Hidden input to track edit mode -->
+            <input type="hidden" id="adhoc-expense-index" value="" />
+
+            <button type="submit">Add Adhoc Expense</button>
+          </form>
+
+          <!-- Adhoc Expenses List -->
+          <h2>Adhoc Expenses</h2>
+          <table id="adhoc-expenses-list-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be added dynamically -->
+            </tbody>
+          </table>
+
           <!-- Income Form -->
           <h2>Add Income</h2>
-          <form id="income-form">
+          <form id="income-form" class="card">
             <label for="income-name">Income Name:</label>
             <input type="text" id="income-name" required />
 
@@ -152,6 +226,14 @@
           <!-- Account Balance Display -->
           <!-- This will be inserted dynamically -->
 
+          <!-- Expenses Bar Chart -->
+          <h2>Expenses Breakdown (Total Over Projection Period)</h2>
+          <canvas id="expenses-chart"></canvas>
+
+          <!-- Expenses by Category Bar Chart -->
+          <h2>Expenses by Category</h2>
+          <canvas id="category-expenses-chart"></canvas>
+
           <!-- Lowest Projected Balances Table -->
           <h2>Lowest Balances by Month</h2>
           <table id="lowest-balances-table">
@@ -174,6 +256,7 @@
               <tr>
                 <th>Date</th>
                 <th>Event/Bill</th>
+                <th>Debit/Credit</th>
                 <th>Balance</th>
               </tr>
             </thead>
@@ -181,18 +264,16 @@
               <!-- Rows will be added dynamically -->
             </tbody>
           </table>
-
-          <!-- Expenses Bar Chart -->
-          <h2>Expenses Breakdown (Total Over Projection Period)</h2>
-          <canvas id="expenses-chart"></canvas>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
     <footer>
+      <p>Use the Export button to save your data, and use the Import button to load previously saved data.</p>
       <button id="export-btn">Export Data</button>
       <input type="file" id="import-file" accept=".json" />
+      <button id="import-btn">Import Data</button>
       <button id="reset-btn">Reset Data</button>
     </footer>
   </main>
