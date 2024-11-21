@@ -1,6 +1,7 @@
 # Budget App
 
 **Version 1.3**
+by Josh Griffith
 
 **Screenshots**
 
@@ -303,13 +304,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-For questions or support, please contact **Your Name**.
+If you have any questions or need support, feel free to reach out to me:
+
+- **Name:** Josh Griffith
+- **Email:** [jshjgriffith@gmail.com](mailto:jshjgriffith@gmail.com)
+- **GitHub:** [@legendarycue](https://github.com/legendarycue)
 
 ## Acknowledgments
 
 - **Chart.js** - For providing the charting library used in the app.
 - **OpenAI ChatGPT** - For assistance in developing the application.
-- **Font Awesome** - For icons used in the application.
 - **Stack Overflow** - For invaluable coding support and solutions.
 
 ## FAQ
