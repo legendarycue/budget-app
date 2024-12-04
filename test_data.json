@@ -1,0 +1,155 @@
+{
+  "bills": [
+    {
+      "name": "Rent",
+      "date": 1,
+      "amount": 1200.00,
+      "category": "Housing"
+    },
+    {
+      "name": "Electricity Bill",
+      "date": 5,
+      "amount": 150.75,
+      "category": "Utilities"
+    },
+    {
+      "name": "Internet Subscription",
+      "date": 10,
+      "amount": 60.00,
+      "category": "Utilities"
+    },
+    {
+      "name": "Car Loan",
+      "date": 15,
+      "amount": 350.00,
+      "category": "Debt Payments"
+    },
+    {
+      "name": "Gym Membership",
+      "date": 20,
+      "amount": 45.00,
+      "category": "Subscriptions/Memberships"
+    },
+    {
+      "name": "Phone Bill",
+      "date": 25,
+      "amount": 80.00,
+      "category": "Utilities"
+    },
+    {
+      "name": "Health Insurance",
+      "date": 28,
+      "amount": 200.00,
+      "category": "Insurance"
+    }
+  ],
+  "incomeEntries": [
+    {
+      "name": "Monthly Salary",
+      "amount": 4000.00,
+      "frequency": "Monthly",
+      "startDate": "2024-01-01"
+    },
+    {
+      "name": "Freelance Project",
+      "amount": 500.00,
+      "frequency": "One-time",
+      "startDate": "2024-02-15"
+    },
+    {
+      "name": "Investment Dividends",
+      "amount": 200.00,
+      "frequency": "Monthly",
+      "startDate": "2024-01-05"
+    }
+  ],
+  "adhocExpenses": [
+    {
+      "name": "Car Maintenance",
+      "date": "2024-02-10",
+      "amount": 300.00,
+      "category": "Transportation"
+    },
+    {
+      "name": "Birthday Gift",
+      "date": "2024-03-22",
+      "amount": 75.50,
+      "category": "Misc/Other"
+    },
+    {
+      "name": "Concert Tickets",
+      "date": "2024-04-18",
+      "amount": 120.00,
+      "category": "Entertainment"
+    },
+    {
+      "name": "Vacation Booking",
+      "date": "2024-05-05",
+      "amount": 1500.00,
+      "category": "Travel"
+    },
+    {
+      "name": "New Laptop",
+      "date": "2024-06-12",
+      "amount": 950.00,
+      "category": "Education"
+    },
+    {
+      "name": "Medical Bill",
+      "date": "2024-07-08",
+      "amount": 250.00,
+      "category": "Healthcare"
+    }
+  ],
+  "accountBalance": 5000.00,
+  "accountName": "Primary Checking Account",
+  "startDate": "2024-01-01T00:00:00.000Z",
+  "projectionLength": 6,
+  "categories": [
+    "Housing",
+    "Utilities",
+    "Debt Payments",
+    "Subscriptions/Memberships",
+    "Insurance",
+    "Transportation",
+    "Misc/Other",
+    "Entertainment",
+    "Travel",
+    "Education",
+    "Healthcare",
+    "Charity/Donations",
+    "Dining Out/Takeout",
+    "Personal Care",
+    "Pets",
+    "Savings/Investments",
+    "Hobbies/Recreation",
+    "Childcare"
+  ],
+  "runningBudgetAdjustments": [
+    {
+      "date": "2024-02-14",
+      "amount": -50.00,
+      "event": "Valentine's Day Dinner"
+    },
+    {
+      "date": "2024-03-17",
+      "amount": -40.00,
+      "event": "St. Patrick's Day Celebration"
+    },
+    {
+      "date": "2024-04-01",
+      "amount": 100.00,
+      "event": "Tax Refund"
+    },
+    {
+      "date": "2024-05-25",
+      "amount": -200.00,
+      "event": "Memorial Day BBQ Party"
+    },
+    {
+      "date": "2024-06-16",
+      "amount": -60.00,
+      "event": "Father's Day Gift"
+    }
+  ]
+}
