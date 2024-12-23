@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [1.6.0] - 2024-12-10
+
+### Added
+* **Savings Feature Reintroduction & Enhancements:**
+  * **Savings Accounts**: Users can once again create multiple savings accounts, each with its own balance and optional savings goal.
+  * **Savings Contributions**: Allows for both ad hoc and recurring (scheduled) contributions from Checking to Savings.
+  * **Collapsible Savings Table**: The day-by-day Savings Accounts balances can be expanded/collapsed for a more mobile-friendly experience.
+  * **Savings Goal Tracking**: Displays each savings account’s progress (percentage and remaining amount) toward a user-defined goal.
+
+* **Improved Editing for Running Budget:**
+  * Instead of appending new event names, editing a running budget entry **replaces** the existing event text if the user enters a new event name (fixing the prior duplication issue).
+
+### Removed
+* **Expenses by Category Pie Chart**:
+  * The pie chart that displayed category expenses has been completely removed to streamline the visualization options.
+
+### Changed
+* **Event Name Handling in Adjustments**:
+  * Adjustments’ `event` field now overrides the daily event description to prevent repeated/duplicated text in the Running Budget table.
+
 ## [1.5.0] - 2024-12-03
 
 ### Added
