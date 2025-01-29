@@ -20,6 +20,19 @@ document.addEventListener('DOMContentLoaded', function () {
   let expensesChart;
   let categoryExpensesChart;
 
+  // Helper to get current date/time as YYYYMMDD_HHMMSS
+  function getCurrentDateTimeString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    // e.g. 20250128_153045
+    return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+  }
+
   // =======================
   // Utility Functions
   // =======================
@@ -1265,8 +1278,10 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
     const downloadAnchorNode = document.createElement('a');
+    // Changed filename to include current date/time
+    const fileName = `budget_data_${getCurrentDateTimeString()}.json`;
     downloadAnchorNode.setAttribute('href', dataStr);
-    downloadAnchorNode.setAttribute('download', 'budget_data.json');
+    downloadAnchorNode.setAttribute('download', fileName);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
@@ -1291,8 +1306,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const csvData = convertDataToCsv(data);
     const dataStr = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvData);
     const downloadAnchorNode = document.createElement('a');
+    // Changed filename to include current date/time
+    const fileName = `budget_data_${getCurrentDateTimeString()}.csv`;
     downloadAnchorNode.setAttribute('href', dataStr);
-    downloadAnchorNode.setAttribute('download', 'budget_data.csv');
+    downloadAnchorNode.setAttribute('download', fileName);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
