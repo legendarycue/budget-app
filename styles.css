@@ -1,9 +1,11 @@
+/* General reset & base styling */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
 
+/* Header and Footer */
 header,
 footer {
   background-color: #f8f9fa;
@@ -11,11 +13,10 @@ footer {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Keep nav and h1 in the same row */
 }
 
 header h1 {
-  flex: 1;
-  text-align: center;
   margin: 0;
 }
 
@@ -117,7 +118,7 @@ h3 {
   margin-right: 0.5em;
 }
 
-/* Reduce chart spacing as requested */
+/* Spacing for charts */
 .bar-chart-container {
   position: relative;
   width: 100%;
@@ -126,11 +127,12 @@ h3 {
   margin: 0 auto;
 }
 
-/* This class helps reduce extra spacing between sections */
+/* Reduced spacing between sections */
 .bar-chart-container.reduced-space {
   margin-bottom: 1em;
 }
 
+/* Modal */
 .modal {
   display: none; /* Hidden by default */
   position: fixed;
@@ -159,9 +161,11 @@ h3 {
   display: flex;
   flex-direction: column;
 }
+
 .modal-form label {
   margin-top: 1em;
 }
+
 .modal-form input,
 .modal-form select,
 .modal-form button {
@@ -190,30 +194,22 @@ h3 {
   width: auto;
 }
 
+/* Category container on separate lines now */
 .category-container {
-  display: flex;
-  align-items: center;
+  display: block;
+  margin-top: 0.5em;
 }
 
 .category-container select {
-  flex: 1;
+  display: block;
+  width: 100%;
+  margin-top: 0.5em;
 }
 
 .category-container button {
-  margin-left: 0.5em;
-  padding: 0.5em 1em;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.category-container button:hover {
-  background-color: #218838;
-}
-
-.running-budget-date {
-  font-style: italic;
+  display: block;
+  width: 100%;
+  margin-top: 0.5em;
 }
 
 /* Conditional Formatting for Positive and Negative Amounts */
@@ -311,22 +307,12 @@ table th {
   color: #333;
 }
 
-/* Responsive Layout */
+/* Responsive Layout: keep header on one line */
 @media (max-width: 800px) {
-  .row {
-    flex-direction: column;
-  }
-
   header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
   }
-
-  header h1 {
-    text-align: left;
-    margin-top: 1em;
-  }
-
   .bar-chart-container {
     width: 100%;
   }

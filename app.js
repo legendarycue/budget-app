@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-    // e.g. 20250128_153045
     return `${year}${month}${day}_${hours}${minutes}${seconds}`;
   }
 
@@ -36,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function parseMathExpression(rawValue) {
     // Remove $ symbols
     let cleaned = rawValue.replace(/\$/g, '');
-    // Remove non-valid characters (digits/operators/decimal points/etc.)
+    // Remove any characters not in digits, operators, parentheses, or decimal points
     cleaned = cleaned.replace(/[^0-9+\-*\\/().]/g, '');
     if (!cleaned) {
       return 0;
@@ -123,11 +122,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Initialize data from local storage
+  // Load data from localStorage
   loadData();
   initializeStartDate();
   populateCategories();
-  setupCollapsibleCards(); 
+  setupCollapsibleCards();
   updateDisplay();
 
   // =======================
@@ -207,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let runningTotals = [];
     let currentBalance = accountBalance;
 
-    // Define the end date
+    // Define end date
     let endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + projectionLength);
 
@@ -243,15 +242,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return adjDate.toDateString() === currentDate.toDateString();
       });
 
-      // Build the base event description from actual items
       let eventDescription = getEventsForDate(currentDate);
 
-      // If we have an adjustment, override the dailyNet/balance as needed
       if (adjustment) {
+        // Overwrite dailyNet/balance if set
         if (adjustment.amount !== undefined) {
           dailyNet = adjustment.amount;
           currentBalance =
-            (runningTotals.length > 0 ? runningTotals[runningTotals.length - 1].balance : accountBalance) + dailyNet;
+            (runningTotals.length > 0 ? runningTotals[runningTotals.length - 1].balance : accountBalance)
+            + dailyNet;
         }
         if (adjustment.event) {
           eventDescription = adjustment.event;
@@ -326,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // =======================
-  // Helpers for Date Matching
+  // Date Checking Helpers
   // =======================
   function isIncomeOnDate(income, date) {
     const incomeStartDate = parseDateInput(income.startDate);
@@ -339,7 +338,6 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'Bi-weekly':
         return diffDays % 14 === 0;
       case 'Monthly':
-        // Matches day-of-month exactly
         return incomeStartDate.getDate() === date.getDate();
       case 'One-time':
         return incomeStartDate.toDateString() === date.toDateString();
@@ -623,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function () {
         responsive: true,
         scales: {
           y: {
-            type: 'logarithmic', // Use log scale
+            type: 'logarithmic', // Use log scale for wide data range
             beginAtZero: true
           }
         },
@@ -1058,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', function () {
     csvContent += `${data.accountName},${data.accountBalance}\n`;
 
     csvContent += '\nStart Date and Projection Length\n';
-    csvContent += `Start Date,Projection Length\n`;
+    csvContent += 'Start Date,Projection Length\n';
     csvContent += `${data.startDate},${data.projectionLength}\n`;
 
     return csvContent;
@@ -1194,7 +1192,7 @@ document.addEventListener('DOMContentLoaded', function () {
       instructionsModal.style.display = 'none';
     }
   });
-  // NOTE: Show instructions on page load:
+  // Show instructions on page load:
   window.addEventListener('load', function () {
     instructionsModal.style.display = 'block';
   });
