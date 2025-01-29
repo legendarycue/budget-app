@@ -84,8 +84,6 @@ h3 {
   display: none;
 }
 
-/* The original .card class replaced by .collapsible-card and .card-form in HTML */
-
 .card-form {
   display: flex;
   flex-direction: column;
@@ -297,7 +295,7 @@ table th {
 .toggle-header {
   cursor: pointer;
   display: inline-block;
-  user-select: none;
+  user-select: none; /* For non-IE browsers */
 }
 
 .caret {

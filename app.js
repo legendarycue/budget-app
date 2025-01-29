@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Remove $ symbols
     let cleaned = rawValue.replace(/\$/g, '');
     // Remove any characters not in digits, operators, parentheses, or decimal points
-    cleaned = cleaned.replace(/[^0-9\\-+*/().]/g, '');
+    // We place the dash safely or escape it, also escape the slash:
+    cleaned = cleaned.replace(/[^0-9+\-*\\/().]/g, '');
     if (!cleaned) {
       // If empty after cleaning, fallback to 0
       return 0;
@@ -501,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const toggleIcon = header.querySelector('.card-toggle');
 
       if (header && cardBody) {
-        // By default, if .expanded is found, keep open, else collapse?
+        // By default, if .expanded is found, keep open, else collapse
         if (!card.classList.contains('expanded')) {
           cardBody.classList.add('collapsed');
           toggleIcon.style.transform = 'none';
@@ -576,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'Bi-weekly':
         return diffDays % 14 === 0;
       case 'Monthly':
-        // NOTE: Matches day-of-month exactly
+        // Matches day-of-month exactly
         return incomeStartDate.getDate() === date.getDate();
       case 'One-time':
         return incomeStartDate.toDateString() === date.toDateString();
@@ -586,7 +587,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function isBillOnDate(bill, date) {
-    // NOTE: If bill.date=31 and month doesn't have 31, it will never match that month
+    // If bill.date=31 and month doesn't have 31, it won't match that month
     return bill.date === date.getDate();
   }
 
@@ -606,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'Bi-weekly':
         return diffDays % 14 === 0;
       case 'Monthly':
-        // NOTE: Matches day-of-month exactly
+        // Matches day-of-month exactly
         return contribStartDate.getDate() === date.getDate();
       case 'One-time':
         return contribStartDate.toDateString() === date.toDateString();
@@ -923,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function () {
         responsive: true,
         scales: {
           y: {
-            type: 'logarithmic', // Use log scale here
+            type: 'logarithmic', // Use log scale
             beginAtZero: true
           }
         },
