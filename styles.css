@@ -1,303 +1,302 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  header,
-  footer {
-    background-color: #f8f9fa;
-    padding: 0 1em;
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  
-  header h1 {
-    flex: 1;
-    text-align: center;
-    margin: 0;
-  }
-  
-  h1,
-  h2,
-  h3 {
-    color: #343a40;
-  }
-  
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 1em;
-  }
-  
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header,
+footer {
+  background-color: #f8f9fa;
+  padding: 0 1em;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+header h1 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: #343a40;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1em;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.col {
+  flex: 1;
+  min-width: 300px;
+  padding: 1em;
+  box-sizing: border-box;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2em;
+}
+
+label {
+  margin-top: 0.5em;
+}
+
+input,
+select,
+button {
+  margin-top: 0.5em;
+  padding: 0.5em;
+  font-size: 1em;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 1em;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.actions-cell button {
+  margin-right: 0.5em;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 2em;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+}
+
+.close-btn {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+}
+
+#close-modal-btn {
+  margin-top: 1em;
+}
+
+.card {
+  border: 1px solid lightgrey;
+  background-color: #f9f9f9; /* Very light grey */
+  padding: 1em;
+  margin-bottom: 2em;
+}
+
+.category-container {
+  display: flex;
+  align-items: center;
+}
+
+.category-container select {
+  flex: 1;
+}
+
+.category-container button {
+  margin-left: 0.5em;
+  padding: 0.5em 1em;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.category-container button:hover {
+  background-color: #218838;
+}
+
+.running-budget-date {
+  font-style: italic;
+}
+
+/* Conditional Formatting for Positive and Negative Amounts */
+.positive-amount {
+  color: green;
+}
+
+.negative-amount {
+  color: red;
+}
+
+.neutral-amount {
+  color: black;
+}
+
+/* Navigation Menu Styles */
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  position: relative;
+}
+
+nav li a.dropbtn {
+  display: block;
+  color: #343a40;
+  text-align: left;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+nav li a.dropbtn:hover,
+nav li a.dropbtn:focus,
+.dropdown:hover .dropbtn {
+  background-color: #ddd;
+}
+
+nav li.dropdown {
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f8f9fa;
+  min-width: 160px;
+  z-index: 1;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+  color: #343a40;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.menu-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+/* Chart Containers */
+.bar-chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 400px; /* Original size for bar charts */
+  margin: 0 auto;
+}
+
+.collapsible-section {
+  margin-top: 2em;
+}
+
+.toggle-header {
+  cursor: pointer;
+  display: inline-block;
+  user-select: none;
+}
+
+.caret {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.caret.down {
+  transform: rotate(90deg);
+}
+
+.collapsible-content {
+  display: none;
+  padding-top: 1em;
+}
+
+/* Responsive Layout */
+@media (max-width: 800px) {
   .row {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-  }
-  
-  .col {
-    flex: 1;
-    min-width: 300px;
-    padding: 1em;
-    box-sizing: border-box;
-  }
-  
-  form {
-    display: flex;
     flex-direction: column;
-    margin-bottom: 2em;
   }
-  
-  label {
-    margin-top: 0.5em;
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  input,
-  select,
-  button {
-    margin-top: 0.5em;
-    padding: 0.5em;
-    font-size: 1em;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
+
+  header h1 {
+    text-align: left;
     margin-top: 1em;
   }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  .actions-cell button {
-    margin-right: 0.5em;
-  }
-  
-  .modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
-  }
-  
-  .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 2em;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 600px;
-    position: relative;
-  }
-  
-  .close-btn {
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .close-btn:hover,
-  .close-btn:focus {
-    color: black;
-  }
-  
-  #close-modal-btn {
-    margin-top: 1em;
-  }
-  
-  .card {
-    border: 1px solid lightgrey;
-    background-color: #f9f9f9; /* Very light grey */
-    padding: 1em;
-    margin-bottom: 2em;
-  }
-  
-  .category-container {
-    display: flex;
-    align-items: center;
-  }
-  
-  .category-container select {
-    flex: 1;
-  }
-  
-  .category-container button {
-    margin-left: 0.5em;
-    padding: 0.5em 1em;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .category-container button:hover {
-    background-color: #218838;
-  }
-  
-  .running-budget-date {
-    font-style: italic;
-  }
-  
-  /* Conditional Formatting for Positive and Negative Amounts */
-  .positive-amount {
-    color: green;
-  }
-  
-  .negative-amount {
-    color: red;
-  }
-  
-  .neutral-amount {
-    color: black;
-  }
-  
-  /* Navigation Menu Styles */
-  nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav li {
-    position: relative;
-  }
-  
-  nav li a.dropbtn {
-    display: block;
-    color: #343a40;
-    text-align: left;
-    padding: 8px 16px;
-    text-decoration: none;
-  }
-  
-  nav li a.dropbtn:hover,
-  nav li a.dropbtn:focus,
-  .dropdown:hover .dropbtn {
-    background-color: #ddd;
-  }
-  
-  nav li.dropdown {
-    display: inline-block;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f8f9fa;
-    min-width: 160px;
-    z-index: 1;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  }
-  
-  .dropdown-content a {
-    color: #343a40;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
-  
-  .dropdown-content a:hover {
-    background-color: #ddd;
-  }
-  
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-  
-  .menu-icon {
-    font-size: 20px;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-  
-  /* Table Styles */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1em;
-  }
-  
-  table th,
-  table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  table th {
-    background-color: #f2f2f2;
-    color: #333;
-  }
-  
-  /* Chart Containers */
+
   .bar-chart-container {
-    position: relative;
     width: 100%;
-    max-width: 800px;
-    height: 400px; /* Original size for bar charts */
-    margin: 0 auto;
   }
-  
-  .collapsible-section {
-    margin-top: 2em;
-  }
-  
-  .toggle-header {
-    cursor: pointer;
-    display: inline-block;
-    user-select: none;
-  }
-  
-  .caret {
-    margin-left: 8px;
-    transition: transform 0.3s ease;
-  }
-  
-  .caret.down {
-    transform: rotate(90deg);
-  }
-  
-  .collapsible-content {
-    display: none;
-    padding-top: 1em;
-  }
-  
-  /* Responsive Layout */
-  @media (max-width: 800px) {
-    .row {
-      flex-direction: column;
-    }
-  
-    header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    header h1 {
-      text-align: left;
-      margin-top: 1em;
-    }
-  
-    .bar-chart-container {
-      width: 100%;
-    }
-  }
-  
+}
