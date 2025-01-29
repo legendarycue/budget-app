@@ -12,10 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
   let categories = [];
   let runningBudgetAdjustments = [];
 
-  // Savings
-  let savingsAccounts = [];
-  let savingsContributions = [];
-
   // Chart variables
   let expensesChart;
   let categoryExpensesChart;
@@ -36,27 +32,22 @@ document.addEventListener('DOMContentLoaded', function () {
   // =======================
   // Utility Functions
   // =======================
-  // This function allows simple math expressions (with or without $) for amounts
-  // e.g. "100 + 50" -> 150, "200 - 20" -> 180, "$100 + 35" -> 135
+  // Allows simple math expressions (with or without $) for amounts
   function parseMathExpression(rawValue) {
     // Remove $ symbols
     let cleaned = rawValue.replace(/\$/g, '');
-    // Remove any characters not in digits, operators, parentheses, or decimal points
-    // We place the dash safely or escape it, also escape the slash:
+    // Remove non-valid characters (digits/operators/decimal points/etc.)
     cleaned = cleaned.replace(/[^0-9+\-*\\/().]/g, '');
     if (!cleaned) {
-      // If empty after cleaning, fallback to 0
       return 0;
     }
     try {
-      // Evaluate safely using new Function
       const result = new Function(`return (${cleaned});`)();
       if (typeof result !== 'number' || isNaN(result)) {
         throw new Error('Invalid expression');
       }
       return result;
     } catch (err) {
-      // If there's an error evaluating, fallback to parseFloat or 0
       console.warn('Failed to parse math expression:', rawValue);
       return parseFloat(rawValue) || 0;
     }
@@ -82,10 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
     localStorage.setItem('projectionLength', projectionLength);
     localStorage.setItem('categories', JSON.stringify(categories));
     localStorage.setItem('runningBudgetAdjustments', JSON.stringify(runningBudgetAdjustments));
-
-    // Savings
-    localStorage.setItem('savingsAccounts', JSON.stringify(savingsAccounts));
-    localStorage.setItem('savingsContributions', JSON.stringify(savingsContributions));
   }
 
   function loadData() {
@@ -99,17 +86,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const categoriesData = localStorage.getItem('categories');
     const adjustmentsData = localStorage.getItem('runningBudgetAdjustments');
 
-    // Savings
-    const savingsAccountsData = localStorage.getItem('savingsAccounts');
-    const savingsContributionsData = localStorage.getItem('savingsContributions');
-
     if (billsData) bills = JSON.parse(billsData);
     if (incomeData) incomeEntries = JSON.parse(incomeData);
     if (adhocExpensesData) adhocExpenses = JSON.parse(adhocExpensesData);
     if (balanceData) accountBalance = parseFloat(balanceData);
     if (accountNameData) accountName = accountNameData;
     if (startDateData) startDate = new Date(startDateData);
-    if (projectionLengthData) projectionLength = parseInt(projectionLengthData);
+    if (projectionLengthData) projectionLength = parseInt(projectionLengthData, 10);
     if (categoriesData) {
       categories = JSON.parse(categoriesData);
     } else {
@@ -135,21 +118,16 @@ document.addEventListener('DOMContentLoaded', function () {
       ];
       saveData();
     }
-    if (adjustmentsData) runningBudgetAdjustments = JSON.parse(adjustmentsData);
-
-    if (savingsAccountsData) savingsAccounts = JSON.parse(savingsAccountsData);
-    if (savingsContributionsData) savingsContributions = JSON.parse(savingsContributionsData);
+    if (adjustmentsData) {
+      runningBudgetAdjustments = JSON.parse(adjustmentsData);
+    }
   }
 
-  // =======================
-  // Initialization
-  // =======================
+  // Initialize data from local storage
   loadData();
   initializeStartDate();
   populateCategories();
-  setupCollapsible(); // For the collapsible savings table
-  setupCollapsibleCards(); // For each .collapsible-card
-
+  setupCollapsibleCards(); 
   updateDisplay();
 
   // =======================
@@ -177,22 +155,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // 7. Render Income Table
     renderIncomeTable();
 
-    // 8. Render Savings Accounts Table
-    renderSavingsAccountsTable();
-
-    // 9. Populate contributions dropdown
-    populateSavingsContributionsDropdown();
-
-    // 10. Calculate total expenses for charts
+    // 8. Calculate total expenses for charts
     const expenseTotals = calculateTotalExpenses();
     renderExpensesCharts(expenseTotals);
 
-    // 11. Calculate category expenses for charts
+    // 9. Calculate category expenses for charts
     const categoryTotals = calculateExpensesByCategory();
     renderCategoryCharts(categoryTotals);
-
-    // 12. Calculate & Render Running Savings Balances
-    renderRunningSavingsTable();
   }
 
   // =======================
@@ -265,21 +234,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // 3. Daily net (before savings contributions)
+      // 3. Daily net
       let dailyNet = dailyIncome - dailyExpenses;
 
-      // 4. Add scheduled savings contributions
-      let dailySavingsOutflow = 0;
-      savingsContributions.forEach((sc) => {
-        if (isContributionOnDate(sc, currentDate)) {
-          dailySavingsOutflow += sc.amount;
-        }
-      });
-
-      dailyNet -= dailySavingsOutflow;
-      currentBalance += dailyNet;
-
-      // 5. Check for manual adjustments
+      // 4. Check for manual adjustments
       const adjustment = runningBudgetAdjustments.find(adj => {
         const adjDate = parseDateInput(adj.date);
         return adjDate.toDateString() === currentDate.toDateString();
@@ -287,23 +245,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Build the base event description from actual items
       let eventDescription = getEventsForDate(currentDate);
-      if (dailySavingsOutflow > 0) {
-        eventDescription += (eventDescription ? ' + ' : '') + 'Savings Contributions';
-      }
 
-      // If we have an adjustment
+      // If we have an adjustment, override the dailyNet/balance as needed
       if (adjustment) {
-        // Overwrite dailyNet/balance if there's an adjustment
         if (adjustment.amount !== undefined) {
           dailyNet = adjustment.amount;
           currentBalance =
             (runningTotals.length > 0 ? runningTotals[runningTotals.length - 1].balance : accountBalance) + dailyNet;
         }
-
-        // Overwrite the event description if present
         if (adjustment.event) {
           eventDescription = adjustment.event;
         }
+      } else {
+        currentBalance += dailyNet;
       }
 
       runningTotals.push({
@@ -324,7 +278,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Render Running Budget (Checking) Table
   // =======================
   function renderRunningBudgetTable(runningTotals) {
-    const tableBody = document.getElementById('running-budget-table').getElementsByTagName('tbody')[0];
+    const tableBody = document
+      .getElementById('running-budget-table')
+      .getElementsByTagName('tbody')[0];
     tableBody.innerHTML = '';
 
     runningTotals.forEach((item, index) => {
@@ -370,201 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // =======================
-  // Render Savings Accounts Running Balances
-  // =======================
-  function renderRunningSavingsTable() {
-    if (!startDate) return;
-    const tableBody = document.getElementById('running-savings-table').getElementsByTagName('tbody')[0];
-    tableBody.innerHTML = '';
-
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + projectionLength);
-
-    const dailySavingsBalances = {};
-    savingsAccounts.forEach(sa => {
-      dailySavingsBalances[sa.name] = [];
-    });
-
-    const currentBalances = {};
-    savingsAccounts.forEach(sa => {
-      currentBalances[sa.name] = sa.balance;
-    });
-
-    let currentDate = new Date(startDate);
-    while (currentDate <= endDate) {
-      // Add any contributions that occur today
-      savingsContributions.forEach(sc => {
-        if (isContributionOnDate(sc, currentDate)) {
-          currentBalances[sc.accountName] = (currentBalances[sc.accountName] || 0) + sc.amount;
-        }
-      });
-
-      // Record daily info for each account
-      savingsAccounts.forEach(sa => {
-        let dailyContribution = 0;
-        if (isContributionOnDateForAccount(sa.name, currentDate)) {
-          const contribs = savingsContributions.filter(
-            c => c.accountName === sa.name && isContributionOnDate(c, currentDate)
-          );
-          dailyContribution = contribs.reduce((acc, c) => acc + c.amount, 0);
-        }
-
-        dailySavingsBalances[sa.name].push({
-          date: new Date(currentDate),
-          contribution: dailyContribution,
-          balance: currentBalances[sa.name]
-        });
-      });
-
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // Flatten into table rows
-    Object.keys(dailySavingsBalances).forEach(accountName => {
-      dailySavingsBalances[accountName].forEach(record => {
-        const row = tableBody.insertRow();
-        const dateCell = row.insertCell(0);
-        const accountCell = row.insertCell(1);
-        const contributionCell = row.insertCell(2);
-        const balanceCell = row.insertCell(3);
-        const progressCell = row.insertCell(4);
-
-        dateCell.textContent = formatRunningBudgetDate(record.date);
-        accountCell.textContent = accountName;
-        contributionCell.textContent = record.contribution > 0
-          ? `+$${record.contribution.toFixed(2)}`
-          : '$0.00';
-        balanceCell.textContent = `$${record.balance.toFixed(2)}`;
-
-        // Goal progress if set
-        const sa = savingsAccounts.find(s => s.name === accountName);
-        if (sa && sa.goal && sa.goal > 0) {
-          const pct = (record.balance / sa.goal) * 100;
-          const remain = sa.goal - record.balance;
-          if (record.balance >= sa.goal) {
-            progressCell.textContent = `100% (Goal Reached!)`;
-          } else {
-            progressCell.textContent = `${pct.toFixed(1)}% ($${remain.toFixed(2)} left)`;
-          }
-        } else {
-          progressCell.textContent = '--';
-        }
-
-        // Conditional styling
-        if (record.contribution > 0) {
-          contributionCell.classList.add('positive-amount');
-        } else {
-          contributionCell.classList.add('neutral-amount');
-        }
-
-        if (record.balance > 100) {
-          balanceCell.style.color = 'green';
-        } else if (record.balance > 0) {
-          balanceCell.style.color = 'orange';
-        } else {
-          balanceCell.style.color = 'red';
-        }
-      });
-    });
-  }
-
-  // =======================
-  // Collapsible Section (Savings Balances)
-  // =======================
-  function setupCollapsible() {
-    const toggleHeader = document.getElementById('savings-balances-toggle');
-    const caret = document.getElementById('savings-balances-caret');
-    const content = document.getElementById('savings-balances-content');
-
-    if (toggleHeader) {
-      toggleHeader.addEventListener('click', function() {
-        if (!content) return;
-        if (content.style.display === 'block') {
-          content.style.display = 'none';
-          caret.classList.remove('down');
-        } else {
-          content.style.display = 'block';
-          caret.classList.add('down');
-        }
-      });
-    }
-  }
-
-  // =======================
-  // Collapsible Cards (for each form/table card)
-  // =======================
-  function setupCollapsibleCards() {
-    const collapsibleCards = document.querySelectorAll('.collapsible-card');
-
-    collapsibleCards.forEach(card => {
-      const header = card.querySelector('.card-header');
-      const cardBody = card.querySelector('.card-body');
-      const toggleIcon = header.querySelector('.card-toggle');
-
-      if (header && cardBody) {
-        // By default, if .expanded is found, keep open, else collapse
-        if (!card.classList.contains('expanded')) {
-          cardBody.classList.add('collapsed');
-          toggleIcon.style.transform = 'none';
-        } else {
-          toggleIcon.style.transform = 'rotate(90deg)';
-        }
-
-        header.addEventListener('click', () => {
-          if (cardBody.classList.contains('collapsed')) {
-            cardBody.classList.remove('collapsed');
-            card.classList.add('expanded');
-            toggleIcon.style.transform = 'rotate(90deg)';
-          } else {
-            cardBody.classList.add('collapsed');
-            card.classList.remove('expanded');
-            toggleIcon.style.transform = 'none';
-          }
-        });
-      }
-    });
-
-    // For Expand All / Collapse All
-    const expandAllBtn = document.getElementById('expand-all-cards-btn');
-    const collapseAllBtn = document.getElementById('collapse-all-cards-btn');
-
-    if (expandAllBtn) {
-      expandAllBtn.addEventListener('click', e => {
-        e.preventDefault();
-        collapsibleCards.forEach(card => {
-          card.classList.add('expanded');
-          const body = card.querySelector('.card-body');
-          const toggleIcon = card.querySelector('.card-toggle');
-          if (body) {
-            body.classList.remove('collapsed');
-          }
-          if (toggleIcon) {
-            toggleIcon.style.transform = 'rotate(90deg)';
-          }
-        });
-      });
-    }
-
-    if (collapseAllBtn) {
-      collapseAllBtn.addEventListener('click', e => {
-        e.preventDefault();
-        collapsibleCards.forEach(card => {
-          card.classList.remove('expanded');
-          const body = card.querySelector('.card-body');
-          const toggleIcon = card.querySelector('.card-toggle');
-          if (body) {
-            body.classList.add('collapsed');
-          }
-          if (toggleIcon) {
-            toggleIcon.style.transform = 'none';
-          }
-        });
-      });
-    }
-  }
-
-  // =======================
-  // Helpers
+  // Helpers for Date Matching
   // =======================
   function isIncomeOnDate(income, date) {
     const incomeStartDate = parseDateInput(income.startDate);
@@ -587,40 +349,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function isBillOnDate(bill, date) {
-    // If bill.date=31 and month doesn't have 31, it won't match that month
     return bill.date === date.getDate();
   }
 
   function isAdhocExpenseOnDate(expense, date) {
     const expenseDate = parseDateInput(expense.date);
     return expenseDate.toDateString() === date.toDateString();
-  }
-
-  function isContributionOnDate(contribution, date) {
-    const contribStartDate = parseDateInput(contribution.startDate);
-    if (contribStartDate > date) return false;
-    const diffTime = date - contribStartDate;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    switch (contribution.frequency) {
-      case 'Weekly':
-        return diffDays % 7 === 0;
-      case 'Bi-weekly':
-        return diffDays % 14 === 0;
-      case 'Monthly':
-        // Matches day-of-month exactly
-        return contribStartDate.getDate() === date.getDate();
-      case 'One-time':
-        return contribStartDate.toDateString() === date.toDateString();
-      default:
-        return false;
-    }
-  }
-
-  function isContributionOnDateForAccount(accountName, date) {
-    return savingsContributions.some(sc => {
-      if (sc.accountName !== accountName) return false;
-      return isContributionOnDate(sc, date);
-    });
   }
 
   function getEventsForDate(date) {
@@ -651,7 +385,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Lowest Balances By Month
   // =======================
   function displayLowestBalancesByMonth(runningTotals) {
-    const tableBody = document.getElementById('lowest-balances-table').getElementsByTagName('tbody')[0];
+    const tableBody = document
+      .getElementById('lowest-balances-table')
+      .getElementsByTagName('tbody')[0];
     tableBody.innerHTML = '';
 
     const monthlyBalances = {};
@@ -660,13 +396,15 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!monthlyBalances[monthKey] || item.balance < monthlyBalances[monthKey].balance) {
         monthlyBalances[monthKey] = {
           date: new Date(item.date),
-          balance: item.balance,
+          balance: item.balance
         };
       }
     });
 
     // Sort by year-month
-    const sortedMonths = Object.keys(monthlyBalances).sort((a, b) => new Date(a + '-1') - new Date(b + '-1'));
+    const sortedMonths = Object.keys(monthlyBalances).sort(
+      (a, b) => new Date(a + '-1') - new Date(b + '-1')
+    );
     sortedMonths.forEach((monthKey) => {
       const entry = monthlyBalances[monthKey];
       const row = tableBody.insertRow();
@@ -697,7 +435,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Render Bills Table
   // =======================
   function renderBillsTable() {
-    const billsTableBody = document.getElementById('bills-list-table').getElementsByTagName('tbody')[0];
+    const billsTableBody = document
+      .getElementById('bills-list-table')
+      .getElementsByTagName('tbody')[0];
     billsTableBody.innerHTML = '';
 
     bills.forEach((bill, index) => {
@@ -730,7 +470,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Render Adhoc Expenses Table
   // =======================
   function renderAdhocExpensesTable() {
-    const adhocExpensesTableBody = document.getElementById('adhoc-expenses-list-table').getElementsByTagName('tbody')[0];
+    const adhocExpensesTableBody = document
+      .getElementById('adhoc-expenses-list-table')
+      .getElementsByTagName('tbody')[0];
     adhocExpensesTableBody.innerHTML = '';
 
     adhocExpenses.forEach((expense, index) => {
@@ -763,7 +505,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Render Income Table
   // =======================
   function renderIncomeTable() {
-    const incomeTableBody = document.getElementById('income-list-table').getElementsByTagName('tbody')[0];
+    const incomeTableBody = document
+      .getElementById('income-list-table')
+      .getElementsByTagName('tbody')[0];
     incomeTableBody.innerHTML = '';
 
     incomeEntries.forEach((income, index) => {
@@ -793,52 +537,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // =======================
-  // Render Savings Accounts Table
-  // =======================
-  function renderSavingsAccountsTable() {
-    const tableBody = document.getElementById('savings-accounts-table').getElementsByTagName('tbody')[0];
-    tableBody.innerHTML = '';
-
-    savingsAccounts.forEach((sa, index) => {
-      const row = tableBody.insertRow();
-      row.insertCell(0).textContent = sa.name;
-      row.insertCell(1).textContent = `$${sa.balance.toFixed(2)}`;
-
-      const actionsCell = row.insertCell(2);
-      actionsCell.classList.add('actions-cell');
-
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
-      editBtn.dataset.index = index;
-      editBtn.dataset.type = 'savingsAccount';
-      editBtn.addEventListener('click', openEditModal);
-      actionsCell.appendChild(editBtn);
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.dataset.index = index;
-      deleteBtn.dataset.type = 'savingsAccount';
-      deleteBtn.addEventListener('click', deleteEntry);
-      actionsCell.appendChild(deleteBtn);
-    });
-  }
-
-  function populateSavingsContributionsDropdown() {
-    const savingsContributionSelect = document.getElementById('savings-contribution-account');
-    savingsContributionSelect.innerHTML = '';
-    savingsAccounts.forEach(sa => {
-      const option = document.createElement('option');
-      option.value = sa.name;
-      option.textContent = sa.name;
-      savingsContributionSelect.appendChild(option);
-    });
-  }
-
-  // =======================
   // Charts
   // =======================
   function renderExpensesCharts(expenseTotals) {
-    // Sort largest to smallest
     const sortedExpenses = Object.entries(expenseTotals).sort((a, b) => b[1] - a[1]);
     const expenseLabels = sortedExpenses.map((item) => item[0]);
     const expenseData = sortedExpenses.map((item) => item[1]);
@@ -846,7 +547,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function renderCategoryCharts(categoryTotals) {
-    // Sort largest first to smallest on the right
     const sorted = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
     const categoryLabels = sorted.map(x => x[0]);
     const categoryData = sorted.map(x => x[1]);
@@ -858,13 +558,12 @@ document.addEventListener('DOMContentLoaded', function () {
     bills.forEach((bill) => {
       const key = bill.name;
       const months = projectionLength;
-      // Bill is repeated for each month
+      // Bill repeats each month
       const totalAmount = (expenseTotals[key] || 0) + bill.amount * months;
       expenseTotals[key] = totalAmount;
     });
     adhocExpenses.forEach((expense) => {
       const key = expense.name;
-      // Adhoc expense is only once
       const totalAmount = (expenseTotals[key] || 0) + expense.amount;
       expenseTotals[key] = totalAmount;
     });
@@ -1097,28 +796,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateRunningBudgetEntry(oldDate);
         editModal.style.display = 'none';
       };
-
-    } else if (type === 'savingsAccount') {
-      const sa = savingsAccounts[index];
-      editModalTitle.textContent = 'Edit Savings Account';
-      editForm.innerHTML = `
-        <label for="edit-savings-account-name">Name:</label>
-        <input type="text" id="edit-savings-account-name" required value="${sa.name}" />
-
-        <label for="edit-savings-account-balance">Balance:</label>
-        <input type="text" id="edit-savings-account-balance" required value="${sa.balance}" />
-
-        <label for="edit-savings-account-goal">Goal (USD):</label>
-        <input type="text" id="edit-savings-account-goal" placeholder="optional" value="${sa.goal || ''}" />
-
-        <button type="submit">Update Savings Account</button>
-        <button type="button" id="cancel-edit-btn">Cancel</button>
-      `;
-      editForm.onsubmit = function(e) {
-        e.preventDefault();
-        updateSavingsAccountEntry(index);
-        editModal.style.display = 'none';
-      };
     }
 
     editModal.style.display = 'block';
@@ -1132,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // =======================
   function updateBillEntry(index) {
     const name = document.getElementById('edit-bill-name').value.trim();
-    const date = parseInt(document.getElementById('edit-bill-date').value);
+    const date = parseInt(document.getElementById('edit-bill-date').value, 10);
     const amount = parseMathExpression(document.getElementById('edit-bill-amount').value);
     const category = document.getElementById('edit-bill-category').value;
     if (date < 1 || date > 31) {
@@ -1189,23 +866,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updateDisplay();
   }
 
-  function updateSavingsAccountEntry(index) {
-    const name = document.getElementById('edit-savings-account-name').value.trim();
-    const balance = parseMathExpression(document.getElementById('edit-savings-account-balance').value);
-    const goalVal = document.getElementById('edit-savings-account-goal').value;
-    const goal = parseMathExpression(goalVal) || 0;
-
-    if (isNaN(balance)) {
-      alert('Please enter a valid balance.');
-      return;
-    }
-    savingsAccounts[index].name = name;
-    savingsAccounts[index].balance = balance;
-    savingsAccounts[index].goal = goal > 0 ? goal : 0;
-    saveData();
-    updateDisplay();
-  }
-
   function deleteEntry(event) {
     const index = event.target.dataset.index;
     const type = event.target.dataset.type;
@@ -1216,11 +876,6 @@ document.addEventListener('DOMContentLoaded', function () {
       adhocExpenses.splice(index, 1);
     } else if (type === 'income') {
       incomeEntries.splice(index, 1);
-    } else if (type === 'savingsAccount') {
-      const saName = savingsAccounts[index].name;
-      savingsAccounts.splice(index, 1);
-      // Remove contributions associated with this account
-      savingsContributions = savingsContributions.filter(sc => sc.accountName !== saName);
     }
 
     saveData();
@@ -1241,7 +896,7 @@ document.addEventListener('DOMContentLoaded', function () {
   billForm.addEventListener('submit', function (e) {
     e.preventDefault();
     const name = document.getElementById('bill-name').value.trim();
-    const date = parseInt(document.getElementById('bill-date').value);
+    const date = parseInt(document.getElementById('bill-date').value, 10);
     const amount = parseMathExpression(document.getElementById('bill-amount').value);
     const category = document.getElementById('bill-category').value;
     if (date < 1 || date > 31) {
@@ -1320,47 +975,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
     startDate = parseDateInput(startDateInput);
-    projectionLength = parseInt(projectionLengthInput);
+    projectionLength = parseInt(projectionLengthInput, 10);
     saveData();
-    updateDisplay();
-  });
-
-  // Savings Account Form
-  const savingsAccountForm = document.getElementById('savings-account-form');
-  savingsAccountForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const name = document.getElementById('savings-account-name').value.trim();
-    const balance = parseMathExpression(document.getElementById('savings-account-balance').value);
-    const goalVal = document.getElementById('savings-account-goal').value;
-    const goal = parseMathExpression(goalVal) || 0;
-
-    if (isNaN(balance)) {
-      alert('Please enter a valid initial balance.');
-      return;
-    }
-    const newSA = { name, balance, goal: (goal > 0 ? goal : 0) };
-    savingsAccounts.push(newSA);
-    saveData();
-    savingsAccountForm.reset();
-    updateDisplay();
-  });
-
-  // Savings Contribution Form
-  const savingsContributionForm = document.getElementById('savings-contribution-form');
-  savingsContributionForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const accountName = document.getElementById('savings-contribution-account').value;
-    const amount = parseMathExpression(document.getElementById('savings-contribution-amount').value);
-    const frequency = document.getElementById('savings-contribution-frequency').value;
-    const dateStr = document.getElementById('savings-contribution-date').value;
-    if (!dateStr || isNaN(amount)) {
-      alert('Please enter valid inputs.');
-      return;
-    }
-    const sc = { accountName, amount, frequency, startDate: dateStr };
-    savingsContributions.push(sc);
-    saveData();
-    savingsContributionForm.reset();
     updateDisplay();
   });
 
@@ -1379,13 +995,10 @@ document.addEventListener('DOMContentLoaded', function () {
       startDate: startDate ? startDate.toISOString() : null,
       projectionLength,
       categories,
-      runningBudgetAdjustments,
-      savingsAccounts,
-      savingsContributions
+      runningBudgetAdjustments
     };
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
     const downloadAnchorNode = document.createElement('a');
-    // Changed filename to include current date/time
     const fileName = `budget_data_${getCurrentDateTimeString()}.json`;
     downloadAnchorNode.setAttribute('href', dataStr);
     downloadAnchorNode.setAttribute('download', fileName);
@@ -1406,14 +1019,11 @@ document.addEventListener('DOMContentLoaded', function () {
       startDate: startDate ? startDate.toISOString() : '',
       projectionLength,
       categories,
-      runningBudgetAdjustments,
-      savingsAccounts,
-      savingsContributions
+      runningBudgetAdjustments
     };
     const csvData = convertDataToCsv(data);
     const dataStr = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvData);
     const downloadAnchorNode = document.createElement('a');
-    // Changed filename to include current date/time
     const fileName = `budget_data_${getCurrentDateTimeString()}.csv`;
     downloadAnchorNode.setAttribute('href', dataStr);
     downloadAnchorNode.setAttribute('download', fileName);
@@ -1450,18 +1060,6 @@ document.addEventListener('DOMContentLoaded', function () {
     csvContent += '\nStart Date and Projection Length\n';
     csvContent += `Start Date,Projection Length\n`;
     csvContent += `${data.startDate},${data.projectionLength}\n`;
-
-    csvContent += '\nSavings Accounts\n';
-    csvContent += 'Name,Balance,Goal\n';
-    data.savingsAccounts.forEach(sa => {
-      csvContent += `${sa.name},${sa.balance},${sa.goal || ''}\n`;
-    });
-
-    csvContent += '\nSavings Contributions\n';
-    csvContent += 'AccountName,Amount,Frequency,StartDate\n';
-    data.savingsContributions.forEach(sc => {
-      csvContent += `${sc.accountName},${sc.amount},${sc.frequency},${sc.startDate}\n`;
-    });
 
     return csvContent;
   }
@@ -1510,8 +1108,6 @@ document.addEventListener('DOMContentLoaded', function () {
           "Misc/Other"
         ];
         runningBudgetAdjustments = data.runningBudgetAdjustments || [];
-        savingsAccounts = data.savingsAccounts || [];
-        savingsContributions = data.savingsContributions || [];
 
         saveData();
         populateCategories();
@@ -1559,8 +1155,6 @@ document.addEventListener('DOMContentLoaded', function () {
         "Misc/Other"
       ];
       runningBudgetAdjustments = [];
-      savingsAccounts = [];
-      savingsContributions = [];
 
       document.getElementById('bill-form').reset();
       document.getElementById('adhoc-expense-form').reset();
@@ -1568,13 +1162,6 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('balance-form').reset();
       document.getElementById('start-date-form').reset();
       document.getElementById('edit-modal').style.display = 'none';
-
-      if (document.getElementById('savings-account-form')) {
-        document.getElementById('savings-account-form').reset();
-      }
-      if (document.getElementById('savings-contribution-form')) {
-        document.getElementById('savings-contribution-form').reset();
-      }
 
       saveData();
       populateCategories();
@@ -1607,10 +1194,81 @@ document.addEventListener('DOMContentLoaded', function () {
       instructionsModal.style.display = 'none';
     }
   });
-  // NOTE: This will automatically show instructions on page load:
+  // NOTE: Show instructions on page load:
   window.addEventListener('load', function () {
     instructionsModal.style.display = 'block';
   });
+
+  // =======================
+  // Collapsible Cards
+  // =======================
+  function setupCollapsibleCards() {
+    const collapsibleCards = document.querySelectorAll('.collapsible-card');
+    collapsibleCards.forEach(card => {
+      const header = card.querySelector('.card-header');
+      const cardBody = card.querySelector('.card-body');
+      const toggleIcon = header.querySelector('.card-toggle');
+
+      if (header && cardBody) {
+        if (!card.classList.contains('expanded')) {
+          cardBody.classList.add('collapsed');
+          toggleIcon.style.transform = 'none';
+        } else {
+          toggleIcon.style.transform = 'rotate(90deg)';
+        }
+
+        header.addEventListener('click', () => {
+          if (cardBody.classList.contains('collapsed')) {
+            cardBody.classList.remove('collapsed');
+            card.classList.add('expanded');
+            toggleIcon.style.transform = 'rotate(90deg)';
+          } else {
+            cardBody.classList.add('collapsed');
+            card.classList.remove('expanded');
+            toggleIcon.style.transform = 'none';
+          }
+        });
+      }
+    });
+
+    // For Expand Cards / Collapse Cards
+    const expandCardsBtn = document.getElementById('expand-cards-btn');
+    const collapseCardsBtn = document.getElementById('collapse-cards-btn');
+
+    if (expandCardsBtn) {
+      expandCardsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        collapsibleCards.forEach(card => {
+          card.classList.add('expanded');
+          const body = card.querySelector('.card-body');
+          const toggleIcon = card.querySelector('.card-toggle');
+          if (body) {
+            body.classList.remove('collapsed');
+          }
+          if (toggleIcon) {
+            toggleIcon.style.transform = 'rotate(90deg)';
+          }
+        });
+      });
+    }
+
+    if (collapseCardsBtn) {
+      collapseCardsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        collapsibleCards.forEach(card => {
+          card.classList.remove('expanded');
+          const body = card.querySelector('.card-body');
+          const toggleIcon = card.querySelector('.card-toggle');
+          if (body) {
+            body.classList.add('collapsed');
+          }
+          if (toggleIcon) {
+            toggleIcon.style.transform = 'none';
+          }
+        });
+      });
+    }
+  }
 
   // =======================
   // Categories
@@ -1636,6 +1294,7 @@ document.addEventListener('DOMContentLoaded', function () {
   addAdhocCategoryBtn.addEventListener('click', addCategory);
   const addBillCategoryBtn = document.getElementById('add-bill-category-btn');
   addBillCategoryBtn.addEventListener('click', addCategory);
+
   function addCategory() {
     const newCategory = prompt('Enter new category:');
     if (newCategory && newCategory.trim()) {

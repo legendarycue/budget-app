@@ -25,8 +25,9 @@
           <a href="#" id="import-btn">Import Data</a>
           <input type="file" id="import-file" accept=".json" style="display: none;" />
           <a href="#" id="reset-btn">Reset Data</a>
-          <a href="#" id="expand-all-cards-btn">Expand All Cards</a>
-          <a href="#" id="collapse-all-cards-btn">Collapse All Cards</a>
+          <hr />
+          <a href="#" id="expand-cards-btn">Expand Cards</a>
+          <a href="#" id="collapse-cards-btn">Collapse Cards</a>
         </div>
       </li>
     </ul>
@@ -46,11 +47,7 @@
       <li><strong>Add Bills/Expenses:</strong> Use the "Add Bill/Expense" form to input recurring monthly expenses.</li>
       <li><strong>Add Adhoc Expenses:</strong> Use the "Add Adhoc Expense" form for one-time expenses on specific dates.</li>
       <li><strong>Add Income:</strong> Use the "Add Income" form to input your income sources and their frequencies.</li>
-      <li><strong>Create Savings Accounts:</strong> Use the "Add Savings Account" form to create one or more savings accounts.</li>
-      <li><strong>Add Savings Contributions:</strong> Use the "Add Savings Contribution" form to set up one-time or scheduled transfers from Checking to Savings.</li>
-      <li><strong>Add a Savings Goal:</strong> When creating (or editing) a savings account, you can also set a goal amount (optional).</li>
       <li><strong>View Running Budget (Checking):</strong> The "Running Budget (Checking)" table shows daily net changes for your main account.</li>
-      <li><strong>View Savings Balances:</strong> The "Savings Accounts Running Balances" (collapsible) shows each day’s progress for your savings accounts, including how close you are to your goal.</li>
       <li><strong>Edit Entries:</strong> Use the "Edit" buttons in the tables to modify or delete entries.</li>
       <li><strong>Export/Import Data:</strong> Use the "Menu" to export your data or import a saved dataset.</li>
       <li><strong>Reset Data:</strong> Use the "Reset Data" option to clear all data and start fresh.</li>
@@ -61,7 +58,7 @@
 
 <!-- Edit Modal -->
 <div id="edit-modal" class="modal">
-  <div class="modal-content">
+  <div class="modal-content modal-form">
     <span class="close-btn" id="close-edit-modal">&times;</span>
     <h2 id="edit-modal-title">Edit Entry</h2>
     <form id="edit-form">
@@ -275,107 +272,6 @@
           </div>
         </div>
 
-        <!-- Savings Account Form -->
-        <div class="collapsible-card expanded">
-          <div class="card-header">
-            <h2>Add Savings Account</h2>
-            <span class="card-toggle">&#9654;</span>
-          </div>
-          <div class="card-body">
-            <form id="savings-account-form" class="card-form">
-              <label for="savings-account-name">Savings Account Name:</label>
-              <input type="text" id="savings-account-name" required />
-
-              <label for="savings-account-balance">Initial Savings Balance (USD):</label>
-              <input type="text" id="savings-account-balance" required />
-
-              <!-- Optional Savings Goal -->
-              <label for="savings-account-goal">Savings Goal (USD) [optional]:</label>
-              <input type="text" id="savings-account-goal" placeholder="e.g. 5000" />
-
-              <button type="submit">Add Savings Account</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Savings Accounts List -->
-        <div class="collapsible-card expanded">
-          <div class="card-header">
-            <h2>Savings Accounts</h2>
-            <span class="card-toggle">&#9654;</span>
-          </div>
-          <div class="card-body">
-            <table id="savings-accounts-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Balance</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Rows will be added dynamically -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Savings Contributions Form -->
-        <div class="collapsible-card expanded">
-          <div class="card-header">
-            <h2>Add Savings Contribution</h2>
-            <span class="card-toggle">&#9654;</span>
-          </div>
-          <div class="card-body">
-            <form id="savings-contribution-form" class="card-form">
-              <label for="savings-contribution-account">Savings Account:</label>
-              <select id="savings-contribution-account">
-                <!-- Populated dynamically with savings accounts -->
-              </select>
-
-              <label for="savings-contribution-amount">Contribution Amount (USD):</label>
-              <input type="text" id="savings-contribution-amount" required />
-
-              <label for="savings-contribution-frequency">Frequency:</label>
-              <select id="savings-contribution-frequency">
-                <option value="One-time">One-time</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Bi-weekly">Bi-weekly</option>
-                <option value="Monthly">Monthly</option>
-              </select>
-
-              <label for="savings-contribution-date">Start Date (for contribution):</label>
-              <input type="date" id="savings-contribution-date" required />
-
-              <button type="submit">Add Contribution</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Collapsible Section for Savings Accounts Running Balances -->
-        <div class="collapsible-section">
-          <h2 id="savings-balances-toggle" class="toggle-header">
-            Savings Accounts Running Balances
-            <span id="savings-balances-caret" class="caret">&#9654;</span>
-          </h2>
-          <div id="savings-balances-content" class="collapsible-content">
-            <table id="running-savings-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Savings Account</th>
-                  <th>Contribution</th>
-                  <th>Balance</th>
-                  <th>Goal Progress</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Rows will be added dynamically -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
       </div>
 
       <!-- Right Column -->
@@ -385,13 +281,13 @@
 
         <!-- Expenses Bar Chart -->
         <h2>Expenses Breakdown (Total Over Projection Period)</h2>
-        <div class="bar-chart-container">
+        <div class="bar-chart-container reduced-space">
           <canvas id="expenses-chart"></canvas>
         </div>
 
         <!-- Expenses by Category (Bar Chart) -->
         <h2>Expenses by Category (Bar Chart)</h2>
-        <div class="bar-chart-container">
+        <div class="bar-chart-container reduced-space">
           <canvas id="category-expenses-chart"></canvas>
         </div>
 
