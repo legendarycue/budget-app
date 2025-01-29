@@ -25,6 +25,8 @@
           <a href="#" id="import-btn">Import Data</a>
           <input type="file" id="import-file" accept=".json" style="display: none;" />
           <a href="#" id="reset-btn">Reset Data</a>
+          <a href="#" id="expand-all-cards-btn">Expand All Cards</a>
+          <a href="#" id="collapse-all-cards-btn">Collapse All Cards</a>
         </div>
       </li>
     </ul>
@@ -74,204 +76,281 @@
       <!-- Left Column -->
       <div class="col" id="input-forms">
         <!-- Start Date and Projection Length Form -->
-        <h2>Start Date and Projection Length</h2>
-        <form id="start-date-form" class="card">
-          <label for="start-date-input">Start Date:</label>
-          <input type="date" id="start-date-input" required />
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Start Date and Projection Length</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <form id="start-date-form" class="card-form">
+              <label for="start-date-input">Start Date:</label>
+              <input type="date" id="start-date-input" required />
 
-          <label for="projection-length">Projection Length (months):</label>
-          <input type="number" id="projection-length" min="1" value="1" required />
+              <label for="projection-length">Projection Length (months):</label>
+              <input type="number" id="projection-length" min="1" value="1" required />
 
-          <button type="submit">Set Start Date</button>
-        </form>
+              <button type="submit">Set Start Date</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Account Balance Form (Checking) -->
-        <h2>Checking Account Balance</h2>
-        <form id="balance-form" class="card">
-          <label for="account-name">Account Name (e.g., My Checking):</label>
-          <input type="text" id="account-name" placeholder="e.g., Checking Account" />
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Checking Account Balance</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <form id="balance-form" class="card-form">
+              <label for="account-name">Account Name (e.g., My Checking):</label>
+              <input type="text" id="account-name" placeholder="e.g., Checking Account" />
 
-          <label for="account-balance">Current Checking Balance (USD):</label>
-          <input type="number" id="account-balance" step="0.01" required />
+              <label for="account-balance">Current Checking Balance (USD):</label>
+              <input type="text" id="account-balance" required />
 
-          <button type="submit">Update Checking</button>
-        </form>
+              <button type="submit">Update Checking</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Bills Form -->
-        <h2>Add Bill/Expense</h2>
-        <form id="bill-form" class="card">
-          <label for="bill-name">Bill Name:</label>
-          <input type="text" id="bill-name" required />
-
-          <label for="bill-date">Day of Month (1-31):</label>
-          <input type="number" id="bill-date" min="1" max="31" required />
-
-          <label for="bill-amount">Amount (USD):</label>
-          <input type="number" id="bill-amount" step="0.01" required />
-
-          <label for="bill-category">Category:</label>
-          <div class="category-container">
-            <select id="bill-category">
-              <!-- Categories will be populated dynamically -->
-            </select>
-            <button type="button" id="add-bill-category-btn">Add Category</button>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Add Bill/Expense</h2>
+            <span class="card-toggle">&#9654;</span>
           </div>
+          <div class="card-body">
+            <form id="bill-form" class="card-form">
+              <label for="bill-name">Bill Name:</label>
+              <input type="text" id="bill-name" required />
 
-          <button type="submit">Add Bill</button>
-        </form>
+              <label for="bill-date">Day of Month (1-31):</label>
+              <input type="number" id="bill-date" min="1" max="31" required />
+
+              <label for="bill-amount">Amount (USD):</label>
+              <input type="text" id="bill-amount" required />
+
+              <label for="bill-category">Category:</label>
+              <div class="category-container">
+                <select id="bill-category">
+                  <!-- Categories will be populated dynamically -->
+                </select>
+                <button type="button" id="add-bill-category-btn">Add Category</button>
+              </div>
+
+              <button type="submit">Add Bill</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Bills List -->
-        <h2>Bills and Expenses</h2>
-        <table id="bills-list-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Day</th>
-              <th>Amount</th>
-              <th>Category</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Rows will be added dynamically -->
-          </tbody>
-        </table>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Bills and Expenses</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <table id="bills-list-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Day</th>
+                  <th>Amount</th>
+                  <th>Category</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows will be added dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <!-- Adhoc Expenses Form -->
-        <h2>Add Adhoc Expense</h2>
-        <form id="adhoc-expense-form" class="card">
-          <label for="adhoc-expense-name">Expense Name:</label>
-          <input type="text" id="adhoc-expense-name" required />
-
-          <label for="adhoc-expense-date">Date:</label>
-          <input type="date" id="adhoc-expense-date" required />
-
-          <label for="adhoc-expense-amount">Amount (USD):</label>
-          <input type="number" id="adhoc-expense-amount" step="0.01" required />
-
-          <label for="adhoc-expense-category">Category:</label>
-          <div class="category-container">
-            <select id="adhoc-expense-category">
-              <!-- Categories will be populated dynamically -->
-            </select>
-            <button type="button" id="add-adhoc-category-btn">Add Category</button>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Add Adhoc Expense</h2>
+            <span class="card-toggle">&#9654;</span>
           </div>
+          <div class="card-body">
+            <form id="adhoc-expense-form" class="card-form">
+              <label for="adhoc-expense-name">Expense Name:</label>
+              <input type="text" id="adhoc-expense-name" required />
 
-          <button type="submit">Add Adhoc Expense</button>
-        </form>
+              <label for="adhoc-expense-date">Date:</label>
+              <input type="date" id="adhoc-expense-date" required />
+
+              <label for="adhoc-expense-amount">Amount (USD):</label>
+              <input type="text" id="adhoc-expense-amount" required />
+
+              <label for="adhoc-expense-category">Category:</label>
+              <div class="category-container">
+                <select id="adhoc-expense-category">
+                  <!-- Categories will be populated dynamically -->
+                </select>
+                <button type="button" id="add-adhoc-category-btn">Add Category</button>
+              </div>
+
+              <button type="submit">Add Adhoc Expense</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Adhoc Expenses List -->
-        <h2>Adhoc Expenses</h2>
-        <table id="adhoc-expenses-list-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Category</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Rows will be added dynamically -->
-          </tbody>
-        </table>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Adhoc Expenses</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <table id="adhoc-expenses-list-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Category</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows will be added dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <!-- Income Form -->
-        <h2>Add Income</h2>
-        <form id="income-form" class="card">
-          <label for="income-name">Income Name:</label>
-          <input type="text" id="income-name" required />
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Add Income</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <form id="income-form" class="card-form">
+              <label for="income-name">Income Name:</label>
+              <input type="text" id="income-name" required />
 
-          <label for="income-amount">Amount per Paycheck:</label>
-          <input type="number" id="income-amount" step="0.01" required />
+              <label for="income-amount">Amount per Paycheck:</label>
+              <input type="text" id="income-amount" required />
 
-          <label for="income-frequency">Frequency:</label>
-          <select id="income-frequency">
-            <option value="Weekly">Weekly</option>
-            <option value="Bi-weekly">Bi-weekly</option>
-            <option value="Monthly">Monthly</option>
-            <option value="One-time">One-time</option>
-          </select>
+              <label for="income-frequency">Frequency:</label>
+              <select id="income-frequency">
+                <option value="Weekly">Weekly</option>
+                <option value="Bi-weekly">Bi-weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="One-time">One-time</option>
+              </select>
 
-          <label for="income-start-date">Start Date:</label>
-          <input type="date" id="income-start-date" required />
+              <label for="income-start-date">Start Date:</label>
+              <input type="date" id="income-start-date" required />
 
-          <button type="submit">Add Income</button>
-        </form>
+              <button type="submit">Add Income</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Income Entries List -->
-        <h2>Income Entries</h2>
-        <table id="income-list-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount</th>
-              <th>Frequency</th>
-              <th>Start Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Rows will be added dynamically -->
-          </tbody>
-        </table>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Income Entries</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <table id="income-list-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Amount</th>
+                  <th>Frequency</th>
+                  <th>Start Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows will be added dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <!-- Savings Account Form -->
-        <h2>Add Savings Account</h2>
-        <form id="savings-account-form" class="card">
-          <label for="savings-account-name">Savings Account Name:</label>
-          <input type="text" id="savings-account-name" required />
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Add Savings Account</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <form id="savings-account-form" class="card-form">
+              <label for="savings-account-name">Savings Account Name:</label>
+              <input type="text" id="savings-account-name" required />
 
-          <label for="savings-account-balance">Initial Savings Balance (USD):</label>
-          <input type="number" id="savings-account-balance" step="0.01" required />
+              <label for="savings-account-balance">Initial Savings Balance (USD):</label>
+              <input type="text" id="savings-account-balance" required />
 
-          <!-- Optional Savings Goal -->
-          <label for="savings-account-goal">Savings Goal (USD) [optional]:</label>
-          <input type="number" id="savings-account-goal" step="0.01" placeholder="e.g. 5000" />
+              <!-- Optional Savings Goal -->
+              <label for="savings-account-goal">Savings Goal (USD) [optional]:</label>
+              <input type="text" id="savings-account-goal" placeholder="e.g. 5000" />
 
-          <button type="submit">Add Savings Account</button>
-        </form>
+              <button type="submit">Add Savings Account</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Savings Accounts List -->
-        <h2>Savings Accounts</h2>
-        <table id="savings-accounts-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Balance</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Rows will be added dynamically -->
-          </tbody>
-        </table>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Savings Accounts</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <table id="savings-accounts-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Balance</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rows will be added dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <!-- Savings Contributions Form -->
-        <h2>Add Savings Contribution</h2>
-        <form id="savings-contribution-form" class="card">
-          <label for="savings-contribution-account">Savings Account:</label>
-          <select id="savings-contribution-account">
-            <!-- Populated dynamically with savings accounts -->
-          </select>
+        <div class="collapsible-card expanded">
+          <div class="card-header">
+            <h2>Add Savings Contribution</h2>
+            <span class="card-toggle">&#9654;</span>
+          </div>
+          <div class="card-body">
+            <form id="savings-contribution-form" class="card-form">
+              <label for="savings-contribution-account">Savings Account:</label>
+              <select id="savings-contribution-account">
+                <!-- Populated dynamically with savings accounts -->
+              </select>
 
-          <label for="savings-contribution-amount">Contribution Amount (USD):</label>
-          <input type="number" id="savings-contribution-amount" step="0.01" required />
+              <label for="savings-contribution-amount">Contribution Amount (USD):</label>
+              <input type="text" id="savings-contribution-amount" required />
 
-          <label for="savings-contribution-frequency">Frequency:</label>
-          <select id="savings-contribution-frequency">
-            <option value="One-time">One-time</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Bi-weekly">Bi-weekly</option>
-            <option value="Monthly">Monthly</option>
-          </select>
+              <label for="savings-contribution-frequency">Frequency:</label>
+              <select id="savings-contribution-frequency">
+                <option value="One-time">One-time</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Bi-weekly">Bi-weekly</option>
+                <option value="Monthly">Monthly</option>
+              </select>
 
-          <label for="savings-contribution-date">Start Date (for contribution):</label>
-          <input type="date" id="savings-contribution-date" required />
+              <label for="savings-contribution-date">Start Date (for contribution):</label>
+              <input type="date" id="savings-contribution-date" required />
 
-          <button type="submit">Add Contribution</button>
-        </form>
+              <button type="submit">Add Contribution</button>
+            </form>
+          </div>
+        </div>
 
         <!-- Collapsible Section for Savings Accounts Running Balances -->
         <div class="collapsible-section">

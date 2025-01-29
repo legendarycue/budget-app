@@ -44,25 +44,66 @@ h3 {
   box-sizing: border-box;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
+/* Collapsible card structure */
+.collapsible-card {
+  border: 1px solid lightgrey;
+  background-color: #f9f9f9;
   margin-bottom: 2em;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-label {
+.collapsible-card.expanded {
+  /* default state if expanded by default */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.card-toggle {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.card-body {
+  padding: 1em;
+  display: block; /* default shown */
+}
+
+.card-body.collapsed {
+  display: none;
+}
+
+/* The original .card class replaced by .collapsible-card and .card-form in HTML */
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-form label {
   margin-top: 0.5em;
 }
 
-input,
-select,
-button {
+.card-form input,
+.card-form select,
+.card-form button {
   margin-top: 0.5em;
   padding: 0.5em;
   font-size: 1em;
 }
 
-button {
+.card-form button {
   background-color: #007bff;
   color: white;
   border: none;
@@ -70,7 +111,7 @@ button {
   margin-top: 1em;
 }
 
-button:hover {
+.card-form button:hover {
   background-color: #0056b3;
 }
 
@@ -117,13 +158,6 @@ button:hover {
 
 #close-modal-btn {
   margin-top: 1em;
-}
-
-.card {
-  border: 1px solid lightgrey;
-  background-color: #f9f9f9; /* Very light grey */
-  padding: 1em;
-  margin-bottom: 2em;
 }
 
 .category-container {

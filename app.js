@@ -36,6 +36,31 @@ document.addEventListener('DOMContentLoaded', function () {
   // =======================
   // Utility Functions
   // =======================
+  // This function allows simple math expressions (with or without $) for amounts
+  // e.g. "100 + 50" -> 150, "200 - 20" -> 180, "$100 + 35" -> 135
+  function parseMathExpression(rawValue) {
+    // Remove $ symbols
+    let cleaned = rawValue.replace(/\$/g, '');
+    // Remove any characters not in digits, operators, parentheses, or decimal points
+    cleaned = cleaned.replace(/[^0-9\\-+*/().]/g, '');
+    if (!cleaned) {
+      // If empty after cleaning, fallback to 0
+      return 0;
+    }
+    try {
+      // Evaluate safely using new Function
+      const result = new Function(`return (${cleaned});`)();
+      if (typeof result !== 'number' || isNaN(result)) {
+        throw new Error('Invalid expression');
+      }
+      return result;
+    } catch (err) {
+      // If there's an error evaluating, fallback to parseFloat or 0
+      console.warn('Failed to parse math expression:', rawValue);
+      return parseFloat(rawValue) || 0;
+    }
+  }
+
   function parseDateInput(dateString) {
     const [year, month, day] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
@@ -121,8 +146,10 @@ document.addEventListener('DOMContentLoaded', function () {
   loadData();
   initializeStartDate();
   populateCategories();
-  updateDisplay();
   setupCollapsible(); // For the collapsible savings table
+  setupCollapsibleCards(); // For each .collapsible-card
+
+  updateDisplay();
 
   // =======================
   // Main Display Update
@@ -132,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     displayCheckingBalance();
 
     // 2. Calculate running totals (Checking)
-    const runningTotals = calculateRunningTotals(); 
+    const runningTotals = calculateRunningTotals();
 
     // 3. Display lowest balances by month
     displayLowestBalancesByMonth(runningTotals);
@@ -156,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
     populateSavingsContributionsDropdown();
 
     // 10. Calculate total expenses for charts
-    const expenseTotals = calculateTotalExpenses(); 
+    const expenseTotals = calculateTotalExpenses();
     renderExpensesCharts(expenseTotals);
 
     // 11. Calculate category expenses for charts
@@ -441,23 +468,98 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // =======================
-  // Collapsible Section
+  // Collapsible Section (Savings Balances)
   // =======================
   function setupCollapsible() {
     const toggleHeader = document.getElementById('savings-balances-toggle');
     const caret = document.getElementById('savings-balances-caret');
     const content = document.getElementById('savings-balances-content');
 
-    toggleHeader.addEventListener('click', function() {
-      if (!content) return;
-      if (content.style.display === 'block') {
-        content.style.display = 'none';
-        caret.classList.remove('down');
-      } else {
-        content.style.display = 'block';
-        caret.classList.add('down');
+    if (toggleHeader) {
+      toggleHeader.addEventListener('click', function() {
+        if (!content) return;
+        if (content.style.display === 'block') {
+          content.style.display = 'none';
+          caret.classList.remove('down');
+        } else {
+          content.style.display = 'block';
+          caret.classList.add('down');
+        }
+      });
+    }
+  }
+
+  // =======================
+  // Collapsible Cards (for each form/table card)
+  // =======================
+  function setupCollapsibleCards() {
+    const collapsibleCards = document.querySelectorAll('.collapsible-card');
+
+    collapsibleCards.forEach(card => {
+      const header = card.querySelector('.card-header');
+      const cardBody = card.querySelector('.card-body');
+      const toggleIcon = header.querySelector('.card-toggle');
+
+      if (header && cardBody) {
+        // By default, if .expanded is found, keep open, else collapse?
+        if (!card.classList.contains('expanded')) {
+          cardBody.classList.add('collapsed');
+          toggleIcon.style.transform = 'none';
+        } else {
+          toggleIcon.style.transform = 'rotate(90deg)';
+        }
+
+        header.addEventListener('click', () => {
+          if (cardBody.classList.contains('collapsed')) {
+            cardBody.classList.remove('collapsed');
+            card.classList.add('expanded');
+            toggleIcon.style.transform = 'rotate(90deg)';
+          } else {
+            cardBody.classList.add('collapsed');
+            card.classList.remove('expanded');
+            toggleIcon.style.transform = 'none';
+          }
+        });
       }
     });
+
+    // For Expand All / Collapse All
+    const expandAllBtn = document.getElementById('expand-all-cards-btn');
+    const collapseAllBtn = document.getElementById('collapse-all-cards-btn');
+
+    if (expandAllBtn) {
+      expandAllBtn.addEventListener('click', e => {
+        e.preventDefault();
+        collapsibleCards.forEach(card => {
+          card.classList.add('expanded');
+          const body = card.querySelector('.card-body');
+          const toggleIcon = card.querySelector('.card-toggle');
+          if (body) {
+            body.classList.remove('collapsed');
+          }
+          if (toggleIcon) {
+            toggleIcon.style.transform = 'rotate(90deg)';
+          }
+        });
+      });
+    }
+
+    if (collapseAllBtn) {
+      collapseAllBtn.addEventListener('click', e => {
+        e.preventDefault();
+        collapsibleCards.forEach(card => {
+          card.classList.remove('expanded');
+          const body = card.querySelector('.card-body');
+          const toggleIcon = card.querySelector('.card-toggle');
+          if (body) {
+            body.classList.add('collapsed');
+          }
+          if (toggleIcon) {
+            toggleIcon.style.transform = 'none';
+          }
+        });
+      });
+    }
   }
 
   // =======================
@@ -735,6 +837,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Charts
   // =======================
   function renderExpensesCharts(expenseTotals) {
+    // Sort largest to smallest
     const sortedExpenses = Object.entries(expenseTotals).sort((a, b) => b[1] - a[1]);
     const expenseLabels = sortedExpenses.map((item) => item[0]);
     const expenseData = sortedExpenses.map((item) => item[1]);
@@ -742,8 +845,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function renderCategoryCharts(categoryTotals) {
-    const categoryLabels = Object.keys(categoryTotals);
-    const categoryData = Object.values(categoryTotals);
+    // Sort largest first to smallest on the right
+    const sorted = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+    const categoryLabels = sorted.map(x => x[0]);
+    const categoryData = sorted.map(x => x[1]);
     renderCategoryExpensesChart(categoryLabels, categoryData);
   }
 
@@ -818,8 +923,9 @@ document.addEventListener('DOMContentLoaded', function () {
         responsive: true,
         scales: {
           y: {
-            beginAtZero: true,
-          },
+            type: 'logarithmic', // Use log scale here
+            beginAtZero: true
+          }
         },
       },
     });
@@ -856,8 +962,8 @@ document.addEventListener('DOMContentLoaded', function () {
         responsive: true,
         scales: {
           y: {
-            beginAtZero: true,
-          },
+            beginAtZero: true
+          }
         },
       },
     });
@@ -886,7 +992,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="number" id="edit-bill-date" min="1" max="31" required value="${bill.date}" />
 
         <label for="edit-bill-amount">Amount (USD):</label>
-        <input type="number" id="edit-bill-amount" step="0.01" required value="${bill.amount}" />
+        <input type="text" id="edit-bill-amount" required value="${bill.amount}" />
 
         <label for="edit-bill-category">Category:</label>
         <div class="category-container">
@@ -917,7 +1023,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="date" id="edit-adhoc-expense-date" required value="${expense.date}" />
 
         <label for="edit-adhoc-expense-amount">Amount (USD):</label>
-        <input type="number" id="edit-adhoc-expense-amount" step="0.01" required value="${expense.amount}" />
+        <input type="text" id="edit-adhoc-expense-amount" required value="${expense.amount}" />
 
         <label for="edit-adhoc-expense-category">Category:</label>
         <div class="category-container">
@@ -945,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="text" id="edit-income-name" required value="${income.name}" />
 
         <label for="edit-income-amount">Amount per Paycheck:</label>
-        <input type="number" id="edit-income-amount" step="0.01" required value="${income.amount}" />
+        <input type="text" id="edit-income-amount" required value="${income.amount}" />
 
         <label for="edit-income-frequency">Frequency:</label>
         <select id="edit-income-frequency">
@@ -976,7 +1082,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="date" id="edit-running-budget-date" required value="${entry.date.toISOString().split('T')[0]}" />
 
         <label for="edit-running-budget-amount">Debit/Credit Amount:</label>
-        <input type="number" id="edit-running-budget-amount" step="0.01" required value="${entry.dailyNet}" />
+        <input type="text" id="edit-running-budget-amount" required value="${entry.dailyNet}" />
 
         <label for="edit-running-budget-event">Event/Bill:</label>
         <input type="text" id="edit-running-budget-event" value="${entry.event}" />
@@ -999,10 +1105,10 @@ document.addEventListener('DOMContentLoaded', function () {
         <input type="text" id="edit-savings-account-name" required value="${sa.name}" />
 
         <label for="edit-savings-account-balance">Balance:</label>
-        <input type="number" id="edit-savings-account-balance" step="0.01" required value="${sa.balance}" />
+        <input type="text" id="edit-savings-account-balance" required value="${sa.balance}" />
 
         <label for="edit-savings-account-goal">Goal (USD):</label>
-        <input type="number" id="edit-savings-account-goal" step="0.01" placeholder="optional" value="${sa.goal || ''}" />
+        <input type="text" id="edit-savings-account-goal" placeholder="optional" value="${sa.goal || ''}" />
 
         <button type="submit">Update Savings Account</button>
         <button type="button" id="cancel-edit-btn">Cancel</button>
@@ -1026,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateBillEntry(index) {
     const name = document.getElementById('edit-bill-name').value.trim();
     const date = parseInt(document.getElementById('edit-bill-date').value);
-    const amount = parseFloat(document.getElementById('edit-bill-amount').value);
+    const amount = parseMathExpression(document.getElementById('edit-bill-amount').value);
     const category = document.getElementById('edit-bill-category').value;
     if (date < 1 || date > 31) {
       alert('Please enter a valid day of the month (1-31).');
@@ -1040,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateAdhocExpenseEntry(index) {
     const name = document.getElementById('edit-adhoc-expense-name').value.trim();
     const date = document.getElementById('edit-adhoc-expense-date').value;
-    const amount = parseFloat(document.getElementById('edit-adhoc-expense-amount').value);
+    const amount = parseMathExpression(document.getElementById('edit-adhoc-expense-amount').value);
     const category = document.getElementById('edit-adhoc-expense-category').value;
     if (!date) {
       alert('Please enter a valid date.');
@@ -1053,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateIncomeEntry(index) {
     const name = document.getElementById('edit-income-name').value.trim();
-    const amount = parseFloat(document.getElementById('edit-income-amount').value);
+    const amount = parseMathExpression(document.getElementById('edit-income-amount').value);
     const frequency = document.getElementById('edit-income-frequency').value;
     const startDate = document.getElementById('edit-income-start-date').value;
     if (!startDate) {
@@ -1067,7 +1173,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateRunningBudgetEntry(oldDate) {
     const newDate = document.getElementById('edit-running-budget-date').value;
-    const amount = parseFloat(document.getElementById('edit-running-budget-amount').value);
+    const amount = parseMathExpression(document.getElementById('edit-running-budget-amount').value);
     const event = document.getElementById('edit-running-budget-event').value;
 
     const adjIndex = runningBudgetAdjustments.findIndex(adj => adj.date === oldDate);
@@ -1084,9 +1190,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateSavingsAccountEntry(index) {
     const name = document.getElementById('edit-savings-account-name').value.trim();
-    const balance = parseFloat(document.getElementById('edit-savings-account-balance').value);
+    const balance = parseMathExpression(document.getElementById('edit-savings-account-balance').value);
     const goalVal = document.getElementById('edit-savings-account-goal').value;
-    const goal = parseFloat(goalVal) || 0;
+    const goal = parseMathExpression(goalVal) || 0;
 
     if (isNaN(balance)) {
       alert('Please enter a valid balance.');
@@ -1135,7 +1241,7 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     const name = document.getElementById('bill-name').value.trim();
     const date = parseInt(document.getElementById('bill-date').value);
-    const amount = parseFloat(document.getElementById('bill-amount').value);
+    const amount = parseMathExpression(document.getElementById('bill-amount').value);
     const category = document.getElementById('bill-category').value;
     if (date < 1 || date > 31) {
       alert('Please enter a valid day of the month (1-31).');
@@ -1154,7 +1260,7 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     const name = document.getElementById('adhoc-expense-name').value.trim();
     const dateInput = document.getElementById('adhoc-expense-date').value;
-    const amount = parseFloat(document.getElementById('adhoc-expense-amount').value);
+    const amount = parseMathExpression(document.getElementById('adhoc-expense-amount').value);
     const category = document.getElementById('adhoc-expense-category').value;
     if (!dateInput) {
       alert('Please enter a valid date.');
@@ -1172,7 +1278,7 @@ document.addEventListener('DOMContentLoaded', function () {
   incomeForm.addEventListener('submit', function (e) {
     e.preventDefault();
     const name = document.getElementById('income-name').value.trim();
-    const amount = parseFloat(document.getElementById('income-amount').value);
+    const amount = parseMathExpression(document.getElementById('income-amount').value);
     const frequency = document.getElementById('income-frequency').value;
     const startDateInput = document.getElementById('income-start-date').value;
     if (!startDateInput) {
@@ -1191,7 +1297,7 @@ document.addEventListener('DOMContentLoaded', function () {
   balanceForm.addEventListener('submit', function (e) {
     e.preventDefault();
     accountName = document.getElementById('account-name').value.trim();
-    const balance = parseFloat(document.getElementById('account-balance').value);
+    const balance = parseMathExpression(document.getElementById('account-balance').value);
     if (isNaN(balance)) {
       alert('Please enter a valid balance.');
       return;
@@ -1223,9 +1329,9 @@ document.addEventListener('DOMContentLoaded', function () {
   savingsAccountForm.addEventListener('submit', function(e) {
     e.preventDefault();
     const name = document.getElementById('savings-account-name').value.trim();
-    const balance = parseFloat(document.getElementById('savings-account-balance').value);
+    const balance = parseMathExpression(document.getElementById('savings-account-balance').value);
     const goalVal = document.getElementById('savings-account-goal').value;
-    const goal = parseFloat(goalVal) || 0;
+    const goal = parseMathExpression(goalVal) || 0;
 
     if (isNaN(balance)) {
       alert('Please enter a valid initial balance.');
@@ -1243,7 +1349,7 @@ document.addEventListener('DOMContentLoaded', function () {
   savingsContributionForm.addEventListener('submit', function(e) {
     e.preventDefault();
     const accountName = document.getElementById('savings-contribution-account').value;
-    const amount = parseFloat(document.getElementById('savings-contribution-amount').value);
+    const amount = parseMathExpression(document.getElementById('savings-contribution-amount').value);
     const frequency = document.getElementById('savings-contribution-frequency').value;
     const dateStr = document.getElementById('savings-contribution-date').value;
     if (!dateStr || isNaN(amount)) {
