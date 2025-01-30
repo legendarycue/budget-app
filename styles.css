@@ -1,25 +1,8 @@
-:root {
-  /* Restore the modern bright blue color scheme */
-  --color-primary: #007bff; /* bright pop */
-  --color-secondary: #0056b3; /* darker shade for hover or secondary usage */
-
-  /* Spacing & sizing */
-  --card-padding: 0.8em; 
-  --transition-speed: 0.3s;
-
-  /* Font & text colors */
-  --text-color-default: #343a40;
-  --text-color-light: #f9f9f9;
-
-  /* Hover states */
-  --hover-bg: #e2e8f0;
-}
-
+/* General reset & base styling */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  color: var(--text-color-default);
 }
 
 /* Header and Footer */
@@ -30,7 +13,7 @@ footer {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* Keep nav and h1 in the same row */
 }
 
 header h1 {
@@ -40,7 +23,7 @@ header h1 {
 h1,
 h2,
 h3 {
-  color: var(--text-color-default);
+  color: #343a40;
 }
 
 .container {
@@ -65,16 +48,10 @@ h3 {
 /* Collapsible card structure */
 .collapsible-card {
   border: 1px solid lightgrey;
-  background-color: #fff;
+  background-color: #f9f9f9;
   margin-bottom: 2em;
   border-radius: 8px;
-  width: 100%; /* On mobile, full width of its container */
   overflow: hidden;
-  transition: box-shadow var(--transition-speed) ease;
-}
-
-.collapsible-card:hover {
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .collapsible-card.expanded {
@@ -85,14 +62,9 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--card-padding);
+  padding: 1em;
   background-color: #f2f2f2;
   cursor: pointer;
-  transition: background-color var(--transition-speed);
-}
-
-.card-header:hover {
-  background-color: var(--hover-bg);
 }
 
 .card-header h2 {
@@ -101,11 +73,11 @@ h3 {
 
 .card-toggle {
   margin-left: 8px;
-  transition: transform var(--transition-speed);
+  transition: transform 0.3s ease;
 }
 
 .card-body {
-  padding: var(--card-padding);
+  padding: 1em;
   display: block; /* default shown */
 }
 
@@ -131,34 +103,19 @@ h3 {
 }
 
 .card-form button {
-  background-color: var(--color-primary);
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
   margin-top: 1em;
-  transition: background-color var(--transition-speed);
 }
 
 .card-form button:hover {
-  background-color: var(--color-secondary);
+  background-color: #0056b3;
 }
 
-.actions-cell {
-  white-space: nowrap;
-}
-
-/* Icon-based buttons for Edit/Delete */
-.icon-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
+.actions-cell button {
   margin-right: 0.5em;
-  padding: 0.2em;
-  transition: transform var(--transition-speed);
-}
-
-.icon-btn:hover {
-  transform: scale(1.1);
 }
 
 /* Spacing for charts */
@@ -170,41 +127,14 @@ h3 {
   margin: 0 auto;
 }
 
+/* Reduced spacing between sections */
 .bar-chart-container.reduced-space {
   margin-bottom: 1em;
 }
 
-/* Table responsiveness + styling */
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.table-responsive table {
-  width: 100%;
-  min-width: 600px; /* ensures columns don't get squashed on mobile */
-  border-collapse: collapse;
-  margin-bottom: 1em;
-}
-
-.table-responsive th,
-.table-responsive td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.table-responsive tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table-responsive th {
-  background-color: #f2f2f2;
-  color: #333;
-}
-
 /* Modal */
 .modal {
-  display: none;
+  display: none; /* Hidden by default */
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -226,6 +156,7 @@ h3 {
   border-radius: 6px;
 }
 
+/* Ensures consistent, cleaner vertical flow in edit modals */
 .modal-form form {
   display: flex;
   flex-direction: column;
@@ -263,7 +194,7 @@ h3 {
   width: auto;
 }
 
-/* Category container with spacing on mobile */
+/* Category container with clearer spacing on mobile */
 .category-container {
   display: block;
   margin-top: 0.5em;
@@ -281,7 +212,7 @@ h3 {
   margin-top: 0.5em;
 }
 
-/* Positive, negative, neutral amounts */
+/* Conditional Formatting for Positive and Negative Amounts */
 .positive-amount {
   color: green;
 }
@@ -294,7 +225,7 @@ h3 {
   color: black;
 }
 
-/* Navigation Menu */
+/* Navigation Menu Styles */
 nav ul {
   list-style-type: none;
   margin: 0;
@@ -307,7 +238,7 @@ nav li {
 
 nav li a.dropbtn {
   display: block;
-  color: var(--color-primary);
+  color: #343a40;
   text-align: left;
   padding: 8px 16px;
   text-decoration: none;
@@ -316,7 +247,11 @@ nav li a.dropbtn {
 nav li a.dropbtn:hover,
 nav li a.dropbtn:focus,
 .dropdown:hover .dropbtn {
-  background-color: var(--hover-bg);
+  background-color: #ddd;
+}
+
+nav li.dropdown {
+  display: inline-block;
 }
 
 .dropdown-content {
@@ -329,7 +264,7 @@ nav li a.dropbtn:focus,
 }
 
 .dropdown-content a {
-  color: #333;
+  color: #343a40;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
@@ -337,7 +272,7 @@ nav li a.dropbtn:focus,
 }
 
 .dropdown-content a:hover {
-  background-color: var(--hover-bg);
+  background-color: #ddd;
 }
 
 .dropdown:hover .dropdown-content {
@@ -350,21 +285,42 @@ nav li a.dropbtn:focus,
   vertical-align: middle;
 }
 
-/* Responsive Layout Adjustments */
-/* For larger screens, we can stack cards in multiple columns. For mobile, full width is default. */
-@media (min-width: 768px) {
-  .col {
-    flex: 0 0 50%;
-    box-sizing: border-box;
-  }
-  .collapsible-card {
-    margin-right: 1em;
-    margin-left: 0;
-  }
+/* Table Styles */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
 }
 
-@media (min-width: 1024px) {
-  .col {
-    flex: 0 0 50%;
+/* Force min-width so columns don't get squashed on mobile */
+.table-responsive table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+.table-responsive th,
+.table-responsive td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table-responsive tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table-responsive th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+/* Responsive Layout: keep header on one line */
+@media (max-width: 800px) {
+  header {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .bar-chart-container {
+    width: 100%;
   }
 }
