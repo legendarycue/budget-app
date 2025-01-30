@@ -1,11 +1,10 @@
 :root {
-  /* Primary theme colors */
-  --color-primary: #2D3748;
-  --color-secondary: #718096;
+  /* Restore the modern bright blue color scheme */
+  --color-primary: #007bff; /* bright pop */
+  --color-secondary: #0056b3; /* darker shade for hover or secondary usage */
 
   /* Spacing & sizing */
-  --card-padding: 0.6em; /* Reduced ~40% from original 1em */
-  --card-width-mobile: 95vw;
+  --card-padding: 0.8em; 
   --transition-speed: 0.3s;
 
   /* Font & text colors */
@@ -13,7 +12,7 @@
   --text-color-light: #f9f9f9;
 
   /* Hover states */
-  --hover-bg: #e2e8f0; /* Slightly lighter background for hover */
+  --hover-bg: #e2e8f0;
 }
 
 body {
@@ -50,20 +49,30 @@ h3 {
   padding: 1em;
 }
 
-/* Mobile-first card layout with 95vw width */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.col {
+  flex: 1;
+  min-width: 300px;
+  padding: 1em;
+  box-sizing: border-box;
+}
+
+/* Collapsible card structure */
 .collapsible-card {
   border: 1px solid lightgrey;
   background-color: #fff;
   margin-bottom: 2em;
   border-radius: 8px;
-  width: var(--card-width-mobile);
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%; /* On mobile, full width of its container */
   overflow: hidden;
   transition: box-shadow var(--transition-speed) ease;
 }
 
-/* Slight shadow hover effect on cards */
 .collapsible-card:hover {
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
@@ -173,7 +182,7 @@ h3 {
 
 .table-responsive table {
   width: 100%;
-  min-width: 600px;
+  min-width: 600px; /* ensures columns don't get squashed on mobile */
   border-collapse: collapse;
   margin-bottom: 1em;
 }
@@ -341,40 +350,21 @@ nav li a.dropbtn:focus,
   vertical-align: middle;
 }
 
-/* Layout and responsiveness */
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.col {
-  flex: 1;
-  min-width: 300px;
-  padding: 1em;
-  box-sizing: border-box;
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  /* On tablets, try to stack collapsible cards horizontally if space allows */
+/* Responsive Layout Adjustments */
+/* For larger screens, we can stack cards in multiple columns. For mobile, full width is default. */
+@media (min-width: 768px) {
+  .col {
+    flex: 0 0 50%;
+    box-sizing: border-box;
+  }
   .collapsible-card {
-    width: calc(50% - 2em);
-    margin: 1em;
+    margin-right: 1em;
+    margin-left: 0;
   }
 }
 
-@media (min-width: 1025px) {
-  /* Keep original style or reduce white space further if needed */
-  .collapsible-card {
-    width: calc(45% - 2em);
-    margin: 1em;
-  }
-}
-
-@media (max-width: 767px) {
-  /* Mobile: keep 95vw with auto margins */
-  .collapsible-card {
-    margin-left: auto;
-    margin-right: auto;
+@media (min-width: 1024px) {
+  .col {
+    flex: 0 0 50%;
   }
 }
