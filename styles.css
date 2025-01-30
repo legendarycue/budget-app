@@ -1,8 +1,26 @@
-/* General reset & base styling */
+:root {
+  /* Primary theme colors */
+  --color-primary: #2D3748;
+  --color-secondary: #718096;
+
+  /* Spacing & sizing */
+  --card-padding: 0.6em; /* Reduced ~40% from original 1em */
+  --card-width-mobile: 95vw;
+  --transition-speed: 0.3s;
+
+  /* Font & text colors */
+  --text-color-default: #343a40;
+  --text-color-light: #f9f9f9;
+
+  /* Hover states */
+  --hover-bg: #e2e8f0; /* Slightly lighter background for hover */
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  color: var(--text-color-default);
 }
 
 /* Header and Footer */
@@ -13,7 +31,7 @@ footer {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Keep nav and h1 in the same row */
+  justify-content: space-between;
 }
 
 header h1 {
@@ -23,7 +41,7 @@ header h1 {
 h1,
 h2,
 h3 {
-  color: #343a40;
+  color: var(--text-color-default);
 }
 
 .container {
@@ -32,26 +50,22 @@ h3 {
   padding: 1em;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.col {
-  flex: 1;
-  min-width: 300px;
-  padding: 1em;
-  box-sizing: border-box;
-}
-
-/* Collapsible card structure */
+/* Mobile-first card layout with 95vw width */
 .collapsible-card {
   border: 1px solid lightgrey;
-  background-color: #f9f9f9;
+  background-color: #fff;
   margin-bottom: 2em;
   border-radius: 8px;
+  width: var(--card-width-mobile);
+  margin-left: auto;
+  margin-right: auto;
   overflow: hidden;
+  transition: box-shadow var(--transition-speed) ease;
+}
+
+/* Slight shadow hover effect on cards */
+.collapsible-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .collapsible-card.expanded {
@@ -62,9 +76,14 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1em;
+  padding: var(--card-padding);
   background-color: #f2f2f2;
   cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+.card-header:hover {
+  background-color: var(--hover-bg);
 }
 
 .card-header h2 {
@@ -73,11 +92,11 @@ h3 {
 
 .card-toggle {
   margin-left: 8px;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-speed);
 }
 
 .card-body {
-  padding: 1em;
+  padding: var(--card-padding);
   display: block; /* default shown */
 }
 
@@ -103,19 +122,34 @@ h3 {
 }
 
 .card-form button {
-  background-color: #007bff;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   cursor: pointer;
   margin-top: 1em;
+  transition: background-color var(--transition-speed);
 }
 
 .card-form button:hover {
-  background-color: #0056b3;
+  background-color: var(--color-secondary);
 }
 
-.actions-cell button {
+.actions-cell {
+  white-space: nowrap;
+}
+
+/* Icon-based buttons for Edit/Delete */
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
   margin-right: 0.5em;
+  padding: 0.2em;
+  transition: transform var(--transition-speed);
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
 }
 
 /* Spacing for charts */
@@ -127,14 +161,41 @@ h3 {
   margin: 0 auto;
 }
 
-/* Reduced spacing between sections */
 .bar-chart-container.reduced-space {
   margin-bottom: 1em;
 }
 
+/* Table responsiveness + styling */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-responsive table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+.table-responsive th,
+.table-responsive td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table-responsive tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table-responsive th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
 /* Modal */
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -156,7 +217,6 @@ h3 {
   border-radius: 6px;
 }
 
-/* Ensures consistent, cleaner vertical flow in edit modals */
 .modal-form form {
   display: flex;
   flex-direction: column;
@@ -194,7 +254,7 @@ h3 {
   width: auto;
 }
 
-/* Category container with clearer spacing on mobile */
+/* Category container with spacing on mobile */
 .category-container {
   display: block;
   margin-top: 0.5em;
@@ -212,7 +272,7 @@ h3 {
   margin-top: 0.5em;
 }
 
-/* Conditional Formatting for Positive and Negative Amounts */
+/* Positive, negative, neutral amounts */
 .positive-amount {
   color: green;
 }
@@ -225,7 +285,7 @@ h3 {
   color: black;
 }
 
-/* Navigation Menu Styles */
+/* Navigation Menu */
 nav ul {
   list-style-type: none;
   margin: 0;
@@ -238,7 +298,7 @@ nav li {
 
 nav li a.dropbtn {
   display: block;
-  color: #343a40;
+  color: var(--color-primary);
   text-align: left;
   padding: 8px 16px;
   text-decoration: none;
@@ -247,11 +307,7 @@ nav li a.dropbtn {
 nav li a.dropbtn:hover,
 nav li a.dropbtn:focus,
 .dropdown:hover .dropbtn {
-  background-color: #ddd;
-}
-
-nav li.dropdown {
-  display: inline-block;
+  background-color: var(--hover-bg);
 }
 
 .dropdown-content {
@@ -264,7 +320,7 @@ nav li.dropdown {
 }
 
 .dropdown-content a {
-  color: #343a40;
+  color: #333;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
@@ -272,7 +328,7 @@ nav li.dropdown {
 }
 
 .dropdown-content a:hover {
-  background-color: #ddd;
+  background-color: var(--hover-bg);
 }
 
 .dropdown:hover .dropdown-content {
@@ -285,42 +341,40 @@ nav li.dropdown {
   vertical-align: middle;
 }
 
-/* Table Styles */
-.table-responsive {
+/* Layout and responsiveness */
+.row {
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
-  overflow-x: auto;
 }
 
-/* Force min-width so columns don't get squashed on mobile */
-.table-responsive table {
-  width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-  margin-bottom: 1em;
+.col {
+  flex: 1;
+  min-width: 300px;
+  padding: 1em;
+  box-sizing: border-box;
 }
 
-.table-responsive th,
-.table-responsive td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.table-responsive tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table-responsive th {
-  background-color: #f2f2f2;
-  color: #333;
-}
-
-/* Responsive Layout: keep header on one line */
-@media (max-width: 800px) {
-  header {
-    flex-direction: row;
-    justify-content: space-between;
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* On tablets, try to stack collapsible cards horizontally if space allows */
+  .collapsible-card {
+    width: calc(50% - 2em);
+    margin: 1em;
   }
-  .bar-chart-container {
-    width: 100%;
+}
+
+@media (min-width: 1025px) {
+  /* Keep original style or reduce white space further if needed */
+  .collapsible-card {
+    width: calc(45% - 2em);
+    margin: 1em;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Mobile: keep 95vw with auto margins */
+  .collapsible-card {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
